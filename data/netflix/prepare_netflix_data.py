@@ -3,11 +3,12 @@
 
 # In[1]:
 
-#prepare netflix data as an input to to cuMF
-#data should be in ./data/netflix/
-#assume input is given in text format
-#each line is like 
-#"user_id item_id rating"
+# prepare netflix data as an input to to cuMF
+# data should be in ./data/netflix/
+# assume input is given in text format
+# each line is like 
+# "user_id item_id rating"
+
 import os
 from six.moves import urllib
 import numpy as np
@@ -19,26 +20,9 @@ from scipy import sparse
 
 # In[2]:
 
-# Step 1: Download the data.
-url = 'http://www.select.cs.cmu.edu/code/graphlab/datasets/'
-
-def maybe_download(filename, expected_bytes):
-  """Download a file if not present, and make sure it's the right size."""
-  if not os.path.exists(filename):
-    filename, _ = urllib.request.urlretrieve(url + filename, filename)
-  statinfo = os.stat(filename)
-  if statinfo.st_size == expected_bytes:
-    print('Found and verified', filename)
-  else:
-    print(statinfo.st_size)
-    raise Exception(
-        'Failed to verify ' + filename + '. Can you get to it with a browser?')
-  return filename
-
-#from http://www.select.cs.cmu.edu/code/graphlab/datasets/
-print "download netflix_mm and netflix_mme from the above URL first"
-train_data_file = maybe_download('netflix_mm', 1471960985)
-test_data_file = maybe_download('netflix_mme', 21053723)
+print "download netflix_mm and netflix_mme first"
+train_data_file = "netflix_mm"
+test_data_file = "netflix_mme"
 
 #netflix_mm and netflix_mme look like
 '''
@@ -53,6 +37,7 @@ test_data_file = maybe_download('netflix_mme', 21053723)
 8 1  3
 
 '''
+
 m = 480189
 n = 17770
 nnz_train = 99072112
@@ -63,7 +48,7 @@ nnz_test = 1408395
 
 print "prepare test data"
 #1-based to 0-based
-test_j,test_i,test_rating = np.loadtxt(test_data_file,dtype=np.int32, skiprows=3, unpack=True)
+test_j,test_i,test_rating = np.loadtxt(test_data_file,dtype=np.int32, unpack=True)
 R_test_coo = coo_matrix((test_rating,(test_i - 1,test_j - 1)))
 
 
@@ -80,7 +65,7 @@ R_test_coo.col.tofile('R_test_coo.col.bin')
 
 print "prepare training data"
 #1-based to 0-based
-train_j,train_i,train_rating = np.loadtxt(train_data_file,dtype=np.int32, skiprows=3, unpack=True)
+train_j,train_i,train_rating = np.loadtxt(train_data_file,dtype=np.int32, unpack=True)
 R_train_coo = coo_matrix((train_rating,(train_i - 1,train_j - 1)))
 
 

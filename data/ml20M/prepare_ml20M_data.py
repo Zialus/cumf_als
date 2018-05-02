@@ -37,12 +37,12 @@ def maybe_download(filename, expected_bytes):
         'Failed to verify ' + filename + '. Can you get to it with a browser?')
   return filename
 
-data_file = maybe_download('ml-10m.zip', 65566137)
+data_file = maybe_download('ml-20m.zip', 198702078)
 
 
 # In[3]:
 
-get_ipython().system(u'unzip -o ml-10m.zip')
+get_ipython().system(u'unzip -o ml-20m.zip')
 #!cd ./ml-10M100K && ./split_ratings.sh
 
 
@@ -61,13 +61,13 @@ get_ipython().system(u'unzip -o ml-10m.zip')
 1::362::5::838984885
 1::364::5::838983707
 '''
-m = 71567
-n = 65133
+m = 138493
+n = 131262
 
 
 # In[5]:
 
-user,item,rating, ts = np.loadtxt('ml-10M100K/ratings.dat', delimiter='::', dtype=np.int32,unpack=True)
+user,item,rating, ts = np.loadtxt('ml-20m/ratings.csv', delimiter=',',skiprows=1,dtype=np.int32,unpack=True)
 print user
 print item
 print rating
@@ -84,9 +84,9 @@ user_item = np.vstack((user, item))
 
 # In[7]:
 
-user_item_train, user_item_test, rating_train, rating_test = train_test_split(user_item.T, rating, test_size=1000006, random_state=42)
-nnz_train = 9000048
-nnz_test = 1000006
+user_item_train, user_item_test, rating_train, rating_test = train_test_split(user_item.T, rating, test_size=2000027, random_state=42)
+nnz_train = 18000236
+nnz_test = 2000027
 
 
 # In[8]:
