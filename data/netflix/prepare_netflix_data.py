@@ -3,8 +3,6 @@
 
 # In[1]:
 
-# prepare netflix data as an input to to cuMF
-# data should be in ./data/netflix/
 # assume input is given in text format
 # each line is like 
 # "user_id item_id rating"
@@ -26,8 +24,6 @@ test_data_file = "netflix_mme"
 
 #netflix_mm and netflix_mme look like
 '''
-% Generated 25-Sep-2011
-480189 17770 99072112
 1 1  3
 2 1  5
 3 1  4
@@ -35,7 +31,6 @@ test_data_file = "netflix_mme"
 6 1  3
 7 1  4
 8 1  3
-
 '''
 
 m = 480189

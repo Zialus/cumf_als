@@ -3,8 +3,6 @@
 
 # In[1]:
 
-# prepare movielens data as an input to to cuMF
-# data should be in ./data/ml10M/
 # assume input is given in text format
 # each line is like 
 # "user_id item_id rating"
@@ -43,7 +41,6 @@ data_file = maybe_download('ml-10m.zip', 65566137)
 # In[3]:
 
 get_ipython().system(u'unzip -o ml-10m.zip')
-#!cd ./ml-10M100K && ./split_ratings.sh
 
 
 # In[4]:
@@ -178,9 +175,4 @@ R_train_csc.indptr.tofile('R_train_csc.indptr.bin')
 print R_train_csr.data
 print R_train_csr.indptr
 print R_train_csr.indices
-
-
-# In[ ]:
-
-
 
