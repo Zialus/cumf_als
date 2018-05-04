@@ -14,7 +14,8 @@ from scipy.sparse import csr_matrix
 from scipy.sparse import csc_matrix
 from scipy.sparse import coo_matrix
 from scipy import sparse
-
+from sklearn.cross_validation import train_test_split
+import pandas as pd
 
 # In[2]:
 
@@ -26,7 +27,7 @@ n = 98212
 
 # In[5]:
 
-user,item,rating, ts = np.loadtxt(data_file, delimiter='\t\t', dtype=np.int32,unpack=True)
+user,item,rating = np.loadtxt(data_file, delimiter='\t', dtype=np.int32,unpack=True)
 print user
 print item
 print rating
