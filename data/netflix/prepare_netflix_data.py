@@ -44,6 +44,7 @@ nnz_test = 1408395
 print "prepare test data"
 #1-based to 0-based
 test_j,test_i,test_rating = np.loadtxt(test_data_file,dtype=np.int32, unpack=True)
+print test_j, test_i, test_rating
 R_test_coo = coo_matrix((test_rating,(test_i - 1,test_j - 1)))
 
 
@@ -61,6 +62,7 @@ R_test_coo.col.tofile('R_test_coo.col.bin')
 print "prepare training data"
 #1-based to 0-based
 train_j,train_i,train_rating = np.loadtxt(train_data_file,dtype=np.int32, unpack=True)
+print train_j, train_i, train_rating
 R_train_coo = coo_matrix((train_rating,(train_i - 1,train_j - 1)))
 
 
@@ -71,7 +73,8 @@ R_train_coo = coo_matrix((train_rating,(train_i - 1,train_j - 1)))
 #we need CSC format of R when calculating \Theta from X
 assert R_train_coo.nnz == nnz_train
 R_train_coo.row.tofile('R_train_coo.row.bin')
-
+R_train_coo.col.tofile('R_train_coo.col.bin')
+R_train_coo.data.tofile('R_train_coo.data.bin')
 
 # In[7]:
 
