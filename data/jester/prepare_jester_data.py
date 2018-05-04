@@ -74,8 +74,7 @@ R_train_coo = coo_matrix((train_rating,(train_i - 1,train_j - 1)))
 print R_train_coo.nnz, nnz_train
 assert R_train_coo.nnz == nnz_train
 R_train_coo.row.tofile('R_train_coo.row.bin')
-R_train_coo.col.tofile('R_train_coo.col.bin')
-R_train_coo.data.tofile('R_train_coo.data.bin')
+
 
 # In[7]:
 
