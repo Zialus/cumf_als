@@ -92,6 +92,11 @@ nnz_test = 1000006
 #1-based to 0-based
 R_test_coo = coo_matrix((rating_test,(user_item_test[:,0] - 1,user_item_test[:,1] - 1)))
 assert R_test_coo.nnz == nnz_test
+
+outfile = open("test.txt",'w')
+for i in range(nnz_test):
+  outfile.write( str((user_item_test[i,0] - 1)) + " " + str((user_item_test[i,1] - 1)) + " " + str(rating_test[i]) + "\n" )
+
 R_test_coo.data.astype(np.float32).tofile('R_test_coo.data.bin')
 R_test_coo.row.tofile('R_test_coo.row.bin')
 R_test_coo.col.tofile('R_test_coo.col.bin')
