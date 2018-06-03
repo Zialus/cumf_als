@@ -12,14 +12,14 @@ find_package(OpenMP REQUIRED)
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/exec/")
 
-set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} -arch=sm_35 -Xptxas -dlcm=ca --std=c++11 -Wno-deprecated-declarations)
+set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} -arch=sm_35 -Xptxas -dlcm=ca --std=c++11)
 
 # Compiler flags
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weverything")
-endif()
+#if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+#    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
+#elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+#    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weverything")
+#endif()
 
 set(WARNINGS "-Wno-format -Wno-unused-value -Wno-pointer-bool-conversion")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNINGS}")
