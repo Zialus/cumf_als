@@ -4,8 +4,8 @@ sudo: required
 
 matrix:
   include:
-    - env: CUDA=6.5-19
-    - env: CUDA=7.0-28
+#    - env: CUDA=6.5-19
+#    - env: CUDA=7.0-28
     - env: CUDA=7.5-18
     - env: CUDA=8.0.61-1
 
