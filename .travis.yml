@@ -2,6 +2,7 @@ language: cpp
 dist: trusty
 sudo: required
 
+
 matrix:
   include:
     - os: linux
@@ -10,16 +11,68 @@ matrix:
       env: CUDA=8.0.61-1
     - os : osx
       osx_image: xcode9
+      env: CUDA=7.0.29
+      before_install:
+        - brew update
+        - brew cask uninstall oclint
+        - brew install llvm@5 && brew link --overwrite llvm@5 --force
+        - export CC=clang-5.0
+        - export CXX=clang++
+        - source ./.travis.osx.sh
+    - os : osx
+      osx_image: xcode9
+      env: CUDA=7.5.27
+      before_install:
+        - brew update
+        - brew cask uninstall oclint
+        - brew install llvm@3.9 && brew link --overwrite llvm@3.9 --force
+        - export CC=clang-3.9
+        - export CXX=clang++
+        - source ./.travis.osx.sh
+    - os : osx
+      osx_image: xcode9
+      env: CUDA=8.0.61
+      before_install:
+        - brew update
+        - brew cask uninstall oclint
+        - brew install llvm@3.9 && brew link --overwrite llvm@3.9 --force
+        - export CC=clang-3.9
+        - export CXX=clang++
+        - source ./.travis.osx.sh
+    - os : osx
+      osx_image: xcode9
+      env: CUDA=9.0.176
+      before_install:
+        - brew update
+        - brew cask uninstall oclint
+        - brew install llvm@4 && brew link --overwrite llvm@4 --force
+        - export CC=clang-4.0
+        - export CXX=clang++
+        - source ./.travis.osx.sh
+    - os : osx
+      osx_image: xcode9
       env: CUDA=9.1.128
+      before_install:
+        - brew update
+        - brew cask uninstall oclint
+        - brew install llvm@4 && brew link --overwrite llvm@4 --force
+        - export CC=clang-4.0
+        - export CXX=clang++
+        - source ./.travis.osx.sh
     - os : osx
       osx_image: xcode9
       env: CUDA=9.2.64
+      before_install:
+        - brew update
+        - brew cask uninstall oclint
+        - brew install llvm@5 && brew link --overwrite llvm@5 --force
+        - export CC=clang-5.0
+        - export CXX=clang++
+        - source ./.travis.osx.sh
 
 
 before_install:
-  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then ./.travis.linux.sh; fi
-  - if [[ $TRAVIS_OS_NAME == "osx" ]];   then ./.travis.osx.sh;   fi
-
+  - source ./.travis.linux.sh
 
 install:
   - nvcc --version
