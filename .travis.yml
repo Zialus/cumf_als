@@ -30,24 +30,28 @@ matrix:
     #     - export CXX=clang++
     #     - source ./.travis.osx.sh
     - os : osx
-      osx_image: xcode9
+      osx_image: xcode8.2
       env: CUDA=8.0.61
       before_install:
         - brew update
-        - brew cask uninstall oclint
-        - brew install llvm@3.7 && brew link --overwrite llvm@3.7 --force
-        - export CC=clang-3.7
-        - export CXX=clang++
+        - brew install libomp
+        - export OpenMP_CXX_FLAGS="-Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include"
+        - export OpenMP_CXX_LIB_NAMES="omp"
+        - export OpenMP_C_FLAGS="-Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include"
+        - export OpenMP_C_LIB_NAMES="omp"
+        - export OpenMP_omp_LIBRARY=/usr/local/opt/libomp/lib/libomp.dylib
         - source ./.travis.osx.sh
     - os : osx
-      osx_image: xcode9
+      osx_image: xcode8.3
       env: CUDA=9.0.176
       before_install:
         - brew update
-        - brew cask uninstall oclint
-        - brew install llvm@3.9 && brew link --overwrite llvm@3.9 --force
-        - export CC=clang-3.9
-        - export CXX=clang++
+        - brew install libomp
+        - export OpenMP_CXX_FLAGS="-Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include"
+        - export OpenMP_CXX_LIB_NAMES="omp"
+        - export OpenMP_C_FLAGS="-Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include"
+        - export OpenMP_C_LIB_NAMES="omp"
+        - export OpenMP_omp_LIBRARY=/usr/local/opt/libomp/lib/libomp.dylib
         - source ./.travis.osx.sh
     - os : osx
       osx_image: xcode9
