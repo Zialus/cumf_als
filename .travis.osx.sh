@@ -1,5 +1,6 @@
 #!/bin/bash -uxe
 
+brew upgrade cmake
 
 case ${CUDA:0:3} in
 
