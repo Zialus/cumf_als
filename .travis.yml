@@ -10,7 +10,7 @@ matrix:
     - os: linux
       env: CUDA=8.0.61-1
     - os : osx
-      osx_image: xcode8.3
+      osx_image: xcode8
       env: CUDA=7.5.27
       before_install:
         - brew update
@@ -22,7 +22,7 @@ matrix:
         - cmake .. -DOpenMP_CXX_FLAGS="-Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include" -DOpenMP_CXX_LIB_NAMES="omp" -DOpenMP_C_FLAGS="-Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include" -DOpenMP_C_LIB_NAMES="omp" -DOpenMP_omp_LIBRARY=/usr/local/opt/libomp/lib/libomp.dylib
         - make
     - os : osx
-      osx_image: xcode8.3
+      osx_image: xcode8
       env: CUDA=8.0.61
       before_install:
         - brew update
