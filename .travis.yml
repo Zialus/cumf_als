@@ -1,3 +1,12 @@
+# https://github.com/gpuopenanalytics/libgdf/blob/master/travisci/install-cuda-trusty.sh
+# https://github.com/gpuopenanalytics/libgdf/blob/master/.travis.yml
+
+# https://github.com/JuliaGPU/CUDAapi.jl/blob/master/.travis.yml
+# https://github.com/JuliaGPU/CUDAapi.jl/blob/master/.travis.osx
+# https://github.com/JuliaGPU/CUDAapi.jl/blob/master/.travis.linux
+
+# https://github.com/tmcdonell/travis-scripts/blob/master/install-cuda-trusty.sh
+
 language: cpp
 sudo: required
 
@@ -89,6 +98,8 @@ before_install:
   - source ./.travis.linux.sh
 
 install:
+  - export CUDA_HOME=/usr/local/cuda
+  - export PATH=${CUDA_HOME}/bin:${PATH}
   - nvcc --version
   - gcc --version
   - g++ --version
