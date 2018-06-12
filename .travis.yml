@@ -1,14 +1,29 @@
 language: cpp
-dist: trusty
 sudo: required
-
 
 matrix:
   include:
     - os: linux
+      dist: trusty
+      env: CUDA=6.5-19
+    - os: linux
+      dist: trusty
+      env: CUDA=7.0-28
+    - os: linux
+      dist: trusty
       env: CUDA=7.5-18
     - os: linux
+      dist: xenial
       env: CUDA=8.0.61-1
+    - os: linux
+      dist: xenial
+      env: CUDA=9.0.176-1
+    - os: linux
+      dist: xenial
+      env: CUDA=9.1.85-1
+    - os: linux
+      dist: xenial
+      env: CUDA=9.2.88-1
     - os : osx
       osx_image: xcode7.3
       env: CUDA=7.5.27
@@ -46,26 +61,29 @@ matrix:
         - cmake .. -DOpenMP_CXX_FLAGS="-Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include" -DOpenMP_CXX_LIB_NAMES="omp" -DOpenMP_C_FLAGS="-Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include" -DOpenMP_C_LIB_NAMES="omp" -DOpenMP_omp_LIBRARY=/usr/local/opt/libomp/lib/libomp.dylib
         - make
     - os : osx
-      osx_image: xcode9
+      osx_image: xcode9.2
       env: CUDA=9.1.128
       before_install:
         - brew update
-        - brew cask uninstall oclint
-        - brew install llvm@4 && brew link --overwrite llvm@4 --force
-        - export CC=clang-4.0
-        - export CXX=clang++
+        - brew install libomp
         - source ./.travis.osx.sh
+      script:
+        - mkdir build
+        - cd build
+        - cmake .. -DOpenMP_CXX_FLAGS="-Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include" -DOpenMP_CXX_LIB_NAMES="omp" -DOpenMP_C_FLAGS="-Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include" -DOpenMP_C_LIB_NAMES="omp" -DOpenMP_omp_LIBRARY=/usr/local/opt/libomp/lib/libomp.dylib
+        - make
     - os : osx
-      osx_image: xcode9
+      osx_image: xcode9.2
       env: CUDA=9.2.64
       before_install:
         - brew update
-        - brew cask uninstall oclint
-        - brew install llvm@5 && brew link --overwrite llvm@5 --force
-        - export CC=clang-5.0
-        - export CXX=clang++
+        - brew install libomp
         - source ./.travis.osx.sh
-
+      script:
+        - mkdir build
+        - cd build
+        - cmake .. -DOpenMP_CXX_FLAGS="-Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include" -DOpenMP_CXX_LIB_NAMES="omp" -DOpenMP_C_FLAGS="-Xpreprocessor -fopenmp -I/usr/local/opt/libomp/include" -DOpenMP_C_LIB_NAMES="omp" -DOpenMP_omp_LIBRARY=/usr/local/opt/libomp/lib/libomp.dylib
+        - make
 
 before_install:
   - source ./.travis.linux.sh
