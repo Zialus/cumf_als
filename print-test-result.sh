@@ -1,6 +1,6 @@
 #!/bin/bash
 echo -e "F\tRMSE\t\tALStime\truntime"
-FILES=$1/*
+FILES=$(ls -v $1/*)
 for f in $FILES
 do
   #echo "Processing $f ..."
