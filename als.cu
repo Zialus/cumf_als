@@ -24,7 +24,7 @@
  */
 //do not use fp16 by default  
 //#define CUMF_USE_HALF
-//#define SURPASS_NAN
+#define SURPASS_NAN
 #define USE_CG
 //if cojugate gradient solver generates results in FP16 
 //#define CUMF_TT_FP16
