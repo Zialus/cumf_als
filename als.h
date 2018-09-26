@@ -31,7 +31,7 @@
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
 #include <cusparse.h>
-#include <host_defines.h>
+
 //these parameters do not change among different problem size
 //our kernels handle the case where F%T==0 and F = 100
 #define T10 10

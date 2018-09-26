@@ -24,6 +24,8 @@
 #ifndef CG_H_
 #define CG_H_
 
+#include <cublas_v2.h>
+
 int updateXWithCG(const int batchSize, const int batchOffset, float * ythetaT, float * tt, float * XT,
 		cublasHandle_t handle, const int m, const int n, const int f, const int nnz);
 		

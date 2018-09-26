@@ -36,14 +36,13 @@
 #include "cg.h"
 #include "host_utilities.h"
 #include <fstream>
-#include <assert.h>
-#include <cuda_fp16.h>
+
 #ifdef CUMF_USE_HALF
 #define SCAN_BATCH 24
 #else
 #define SCAN_BATCH 28
 #endif
-#include <iostream>
+
 using namespace std;
 
 void saveDeviceFloatArrayToFile(string fileName, int size, float* d_array){

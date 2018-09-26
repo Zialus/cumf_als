@@ -1,7 +1,13 @@
 #ifndef DEVICE_UTILITIES_H_
 #define DEVICE_UTILITIES_H_
 #define WARP_SIZE 32
-#include <cuda_fp16.h> 
+
+#ifndef __CUDACC__
+#define __CUDACC__
+#endif
+
+#include <cuda_fp16.h>
+#include <cuda_runtime.h>
 
 //WARP shuffling code adopted from here:
 //https://devblogs.nvidia.com/parallelforall/faster-parallel-reductions-kepler/
