@@ -43,9 +43,7 @@
 #define SCAN_BATCH 28
 #endif
 
-using namespace std;
-
-void saveDeviceFloatArrayToFile(string fileName, int size, float* d_array){
+void saveDeviceFloatArrayToFile(std::string fileName, int size, float* d_array){
 	float* h_array;
 	cudacall(cudaMallocHost( (void** ) &h_array, size * sizeof(h_array[0])) );
 	cudacall(cudaMemcpy(h_array, d_array, size * sizeof(h_array[0]),cudaMemcpyDeviceToHost));
@@ -715,7 +713,7 @@ float doALS(const int* csrRowIndexHostPtr, const int* csrColIndexHostPtr, const 
 	cusparsecall( cusparseCreateMatDescr(&descr));
 	cusparseSetMatType(descr, CUSPARSE_MATRIX_TYPE_GENERAL);
 	cusparseSetMatIndexBase(descr, CUSPARSE_INDEX_BASE_ZERO);
-	using namespace std;
+
 	#ifdef DEBUG
 	//variable used to time
 	double t0 = 0;

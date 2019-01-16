@@ -46,8 +46,7 @@
 //#define CUMF_TT_FP16
 
 
-using namespace std;
-void saveDeviceFloatArrayToFile(string fileName, int size, float* d_array){
+void saveDeviceFloatArrayToFile(std::string fileName, int size, float* d_array){
 	float* h_array;
 	cudacall(cudaMallocHost( (void** ) &h_array, size * sizeof(h_array[0])) );
 	cudacall(cudaMemcpy(h_array, d_array, size * sizeof(h_array[0]),cudaMemcpyDeviceToHost));
@@ -2413,7 +2412,7 @@ int main() {
 	cusparsecall( cusparseCreateMatDescr(&descr));
 	cusparseSetMatType(descr, CUSPARSE_MATRIX_TYPE_GENERAL);
 	cusparseSetMatIndexBase(descr, CUSPARSE_INDEX_BASE_ZERO);
-	using namespace std;
+
 
 	//variable used to time
 	double t0;
