@@ -21,8 +21,8 @@
 #include <string>
 #include <sstream>
 #include "./common.h"
-#include "../als.h"
-#include "../cg.h"
+#include "../src/als.h"
+#include "../src/cg.h"
 //variable definition
 #define F 100
 #define TILE_SIZE F/10

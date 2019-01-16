@@ -62,9 +62,9 @@ if (MSVC)
 endif ()
 
 
-file(GLOB src "${PROJECT_SOURCE_DIR}/*.cpp" "${PROJECT_SOURCE_DIR}/*.c")
-file(GLOB hdr "${PROJECT_SOURCE_DIR}/*.hpp" "${PROJECT_SOURCE_DIR}/*.h")
-file(GLOB cuda "${PROJECT_SOURCE_DIR}/*.cu")
+file(GLOB src "${PROJECT_SOURCE_DIR}/src/*.cpp" "${PROJECT_SOURCE_DIR}/src/*.c")
+file(GLOB hdr "${PROJECT_SOURCE_DIR}/src/*.hpp" "${PROJECT_SOURCE_DIR}/src/*.h")
+file(GLOB cuda "${PROJECT_SOURCE_DIR}/src/*.cu")
 
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/exec/")

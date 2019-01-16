@@ -1,7 +1,7 @@
 #include <sys/time.h>
 #include <iostream>
 #include <cublas_v2.h>
-#include "../als.h"
+#include "../src/als.h"
 inline double seconds(){
     struct timeval tp;
     gettimeofday(&tp, NULL);

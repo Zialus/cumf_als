@@ -221,7 +221,7 @@ build: hugewiki
 hugewiki.o:hugewiki.cu
 	$(NVCC) $(INCLUDES) $(ALL_CCFLAGS) $(GENCODE_FLAGS) -lineinfo -o $@ -c $<
 
-hugewiki: hugewiki.o ../cg.o
+hugewiki: hugewiki.o ../src/cg.o
 	$(NVCC) $(ALL_LDFLAGS) $(GENCODE_FLAGS) -lineinfo -o $@ $+ $(LIBRARIES)
 	
 run: build
