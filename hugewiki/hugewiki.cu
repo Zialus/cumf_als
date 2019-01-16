@@ -14,7 +14,7 @@
 #include <fstream>
 #include <sys/time.h>
 #include <cusparse.h>
-#include <host_defines.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <omp.h>
@@ -23,6 +23,7 @@
 #include "./common.h"
 #include "../src/als.h"
 #include "../src/cg.h"
+
 //variable definition
 #define F 100
 #define TILE_SIZE F/10

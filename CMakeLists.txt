@@ -66,7 +66,13 @@ file(GLOB src "${PROJECT_SOURCE_DIR}/src/*.cpp" "${PROJECT_SOURCE_DIR}/src/*.c")
 file(GLOB hdr "${PROJECT_SOURCE_DIR}/src/*.hpp" "${PROJECT_SOURCE_DIR}/src/*.h")
 file(GLOB cuda "${PROJECT_SOURCE_DIR}/src/*.cu")
 
+file(GLOB hugewiki1 "${PROJECT_SOURCE_DIR}/hugewiki/*.cu" "${PROJECT_SOURCE_DIR}/hugewiki/*.h")
+file(GLOB hugewiki2 "${PROJECT_SOURCE_DIR}/src/cg.*")
+
 
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/exec/")
 CUDA_ADD_EXECUTABLE(cumf_als ${src} ${hdr} ${cuda})
+CUDA_ADD_EXECUTABLE(hugewiki ${hugewiki1} ${hugewiki2})
+
 target_link_libraries(cumf_als OpenMP::OpenMP_CXX ${CUDA_CUBLAS_LIBRARIES} ${CUDA_cusparse_LIBRARY})
+target_link_libraries(hugewiki OpenMP::OpenMP_CXX ${CUDA_CUBLAS_LIBRARIES} ${CUDA_cusparse_LIBRARY})
