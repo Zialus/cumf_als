@@ -17,82 +17,82 @@
 #include <fstream>
 
 void loadCSRSparseMatrixBin(const char* dataFile, const char* rowFile, const char* colFile,
-		float* data, int* row, int* col, const int m, const long nnz) {
-	#ifdef DEBUG
+        float* data, int* row, int* col, const int m, const long nnz) {
+    #ifdef DEBUG
     printf("\n loading CSR...\n");
-	#endif
-	FILE *dFile = fopen(dataFile,"rb");
-	FILE *rFile = fopen(rowFile,"rb");
-	FILE *cFile = fopen(colFile,"rb");
-	if (!rFile||!dFile||!dFile)
-	{
-		printf("Unable to open file!");
-		return;
-	}
+    #endif
+    FILE *dFile = fopen(dataFile,"rb");
+    FILE *rFile = fopen(rowFile,"rb");
+    FILE *cFile = fopen(colFile,"rb");
+    if (!rFile||!dFile||!dFile)
+    {
+        printf("Unable to open file!");
+        return;
+    }
 
-	fread(&row[0], 4*(m+1) ,1, rFile);
-	fread(&col[0], 4*nnz ,1, cFile);
-	fread(&data[0], 4*nnz ,1, dFile);
+    fread(&row[0], 4*(m+1) ,1, rFile);
+    fread(&col[0], 4*nnz ,1, cFile);
+    fread(&data[0], 4*nnz ,1, dFile);
 
-	fclose(rFile);
-	fclose(dFile);
-	fclose(cFile);
+    fclose(rFile);
+    fclose(dFile);
+    fclose(cFile);
 }
 
 void loadCSCSparseMatrixBin(const char* dataFile, const char* rowFile, const char* colFile,
-		float * data, int* row, int* col, const int n, const long nnz) {
-	#ifdef DEBUG		
+        float * data, int* row, int* col, const int n, const long nnz) {
+    #ifdef DEBUG
     printf("\n loading CSC...\n");
-	#endif
+    #endif
 
-	FILE *dFile = fopen(dataFile,"rb");
-	FILE *rFile = fopen(rowFile,"rb");
-	FILE *cFile = fopen(colFile,"rb");
-	if (!rFile||!dFile||!dFile)
-	{
-		printf("Unable to open file!");
-		return;
-	}
+    FILE *dFile = fopen(dataFile,"rb");
+    FILE *rFile = fopen(rowFile,"rb");
+    FILE *cFile = fopen(colFile,"rb");
+    if (!rFile||!dFile||!dFile)
+    {
+        printf("Unable to open file!");
+        return;
+    }
 
-	fread(&row[0], 4*nnz ,1, rFile);
-	fread(&col[0], 4*(n+1) ,1, cFile);
-	fread(&data[0], 4*nnz ,1, dFile);
+    fread(&row[0], 4*nnz ,1, rFile);
+    fread(&col[0], 4*(n+1) ,1, cFile);
+    fread(&data[0], 4*nnz ,1, dFile);
 
-	fclose(rFile);
-	fclose(dFile);
-	fclose(cFile);
+    fclose(rFile);
+    fclose(dFile);
+    fclose(cFile);
 }
 
 void loadCooSparseMatrixRowPtrBin(const char* rowFile, int* row, const long nnz) {
-	#ifdef DEBUG
+    #ifdef DEBUG
     printf("\n loading COO Row...\n");
-	#endif
-	FILE *rfile = fopen(rowFile,"rb");
-	fread(&row[0], 4*nnz ,1, rfile);
-	fclose(rfile);
+    #endif
+    FILE *rfile = fopen(rowFile,"rb");
+    fread(&row[0], 4*nnz ,1, rfile);
+    fclose(rfile);
 }
 
 void loadCooSparseMatrixBin(const char* dataFile, const char* rowFile, const char* colFile,
-		float* data, int* row, int* col, const long nnz) {
-	#ifdef DEBUG
+        float* data, int* row, int* col, const long nnz) {
+    #ifdef DEBUG
     printf("\n loading COO...\n");
-	#endif
+    #endif
 
-	FILE *dFile = fopen(dataFile,"rb");
-	FILE *rFile = fopen(rowFile,"rb");
-	FILE *cFile = fopen(colFile,"rb");
-	if (!rFile||!dFile||!cFile)
-	{
-		printf("Unable to open file!");
-		return;
-	}
+    FILE *dFile = fopen(dataFile,"rb");
+    FILE *rFile = fopen(rowFile,"rb");
+    FILE *cFile = fopen(colFile,"rb");
+    if (!rFile||!dFile||!cFile)
+    {
+        printf("Unable to open file!");
+        return;
+    }
 
-	fread(&row[0], 4*nnz, 1, rFile);
-	fread(&col[0], 4*nnz, 1, cFile);
-	fread(&data[0], 4*nnz, 1, dFile);
+    fread(&row[0], 4*nnz, 1, rFile);
+    fread(&col[0], 4*nnz, 1, cFile);
+    fread(&data[0], 4*nnz, 1, dFile);
 
-	fclose(rFile);
-	fclose(dFile);
-	fclose(cFile);
+    fclose(rFile);
+    fclose(dFile);
+    fclose(cFile);
 }
 
