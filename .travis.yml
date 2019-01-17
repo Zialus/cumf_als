@@ -65,9 +65,29 @@ matrix:
       env: CUDA=10.0.130
       before_install: *cuda_install
 
+    # SONARCLOUD
+    - os: linux
+      dist: xenial
+      addons:
+        sonarcloud:
+          organization: "zialus-github"
+          token:
+            secure: "s/j5fl2+JZ/4+QvIjM43Iuv2NP6ZYaUwFDPnZJ06jxF9m3uuZi6+tzV2wNlzvwEhIsb2ALjIuQd/KVTrBWHeT66UFZWu04k7XXrcWHfoCwM5sAAI3xgVUb2FNSnDUkSNkBC5Nku4jSZklHiy1PgUU8voMgTnoOY4gcriAzydeuj8lpvOPcg7Z06mwmkZpKfWf6Iut/up+NIa/iZy9HK6bkuNfc0Wah4mTh+LVCQ2EHDMLTvS9FKdRseI1xhPt3pxv5oQBa5UlcOz8IKtcc9ebdeqnpq7jyv7hgVqo/qEEu+mxzaHx+qZTWCUU6QD3d0oQaKlyiQZVtPvAr3dpo183ruH+3KmdBXKICCKWNGyPruQRG/Ktiz7weYCOFt4hs9lUvOo//MWqHxGalERs0FMSmq2oQGqpj2jxAWlARhYbZEDGuj53YrqyIphBNqsRO3HGJFS4LBKa2wZFJI7U8hx+IkZb7TUlB9AYoZRN5QQLBU82zDtmCqk03v4zD+XuZ1Rj98RGMdRY9yi1UGWQ0K4xVA42nkXTca5huAhei0sgZkL66cIraujmKrcCg3vT/6Tb0mS/2LICRtJy1zDPNVYwmcfOlG7qmHfpjQFEqv/AzQ82WZl6Yz8sAp3zvUUqOMIhkJJ76pHRMLdDxug9km5k1rK2YHSid5r0SblLE6I4uo="
+      script:
+        - git fetch --unshallow
+        - mkdir build && cd build
+        - cmake -DCMAKE_BUILD_TYPE=Release ..
+        - build-wrapper-linux-x86-64 --out-dir bw-output make clean all
+        - ctest -V -C Release
+        - cd ..
+        - sonar-scanner
+      env:
+        - SONAR_CLOUD="YUP"
+        - CUDA=10.0.130-1
+
 before_install:
-  - wget https://cmake.org/files/v3.12/cmake-3.12.2-Linux-x86_64.sh
-  - sudo sh cmake-3.12.2-Linux-x86_64.sh --prefix=/home/travis/.local/ --exclude-subdir
+  - wget https://cmake.org/files/v3.13/cmake-3.13.2-Linux-x86_64.sh
+  - sudo sh cmake-3.13.2-Linux-x86_64.sh --prefix=/home/travis/.local/ --exclude-subdir
   - source ./scripts/travis_linux
 
 install:
