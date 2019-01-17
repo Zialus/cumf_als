@@ -19,14 +19,14 @@
 #define HOST_UTILITIES_H_
 
 void loadCSRSparseMatrixBin(const char* dataFile, const char* rowFile, const char* colFile,
-                            float* data, int* row, int* col, const int m, const long nnz);
+                            float* data, int* row, int* col, int m, long nnz);
 
 void loadCSCSparseMatrixBin(const char* dataFile, const char* rowFile, const char* colFile,
-                            float* data, int* row, int* col, const int n, const long nnz);
+                            float* data, int* row, int* col, int n, long nnz);
 
-void loadCooSparseMatrixRowPtrBin(const char* rowFile, int* row, const long nnz);
+void loadCooSparseMatrixRowPtrBin(const char* rowFile, int* row, long nnz);
 
 void loadCooSparseMatrixBin(const char* dataFile, const char* rowFile, const char* colFile,
-                            float* data, int* row, int* col, const long nnz);
+                            float* data, int* row, int* col, long nnz);
 
 #endif

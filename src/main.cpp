@@ -10,8 +10,10 @@
 
 #include "als.h"
 #include "host_utilities.h"
-#include <stdlib.h>
-#include <stdio.h>
+
+#include <cstdlib>
+#include <cstdio>
+
 #include <string>
 #include <chrono>
 
@@ -74,14 +76,14 @@ int main(int argc, char** argv) {
     unsigned int seed = 0;
     srand(seed);
     for (int k = 0; k < n * f; k++) {
-        thetaTHost[k] = 0.2 * ((float) rand() / (float) RAND_MAX);
+        thetaTHost[k] = (float)0.2 * ((float) rand() / (float) RAND_MAX);
     }
     //CG needs to initialize X as well
     for (int k = 0; k < m * f; k++) {
-        XTHost[k] = 0; //0.1*((float) rand() / (float)RAND_MAX);;
+        XTHost[k] = 0;
     }
+
     printf("*******start loading training and testing sets to host.\n");
-    //testing set
     int* cooRowIndexTestHostPtr = (int*) malloc(nnz_test * sizeof(cooRowIndexTestHostPtr[0]));
     int* cooColIndexTestHostPtr = (int*) malloc(nnz_test * sizeof(cooColIndexTestHostPtr[0]));
     float* cooValHostTestPtr = (float*) malloc(nnz_test * sizeof(cooValHostTestPtr[0]));

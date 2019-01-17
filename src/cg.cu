@@ -26,7 +26,9 @@
 #include "als.h"
 #include "device_utilities.h"
 #include "host_utilities.h"
+
 #include <fstream>
+
 #define SCAN_BATCH 24
 #define CG_ERROR 1e-4
 #undef DEBUG
@@ -638,6 +640,7 @@ __global__ void updateXWithCGKernel2(float * A, float * x, float * b, const int 
 		x[blockIdx.x*f + k] = sharedx[k];
 }
 
+
 void updateXWithCGHost_tt_fp16(float * A, float * x, float * b, const int batchSize, const int f, const float cgIter){
 	updateXWithCGKernel3<<<batchSize, f, (4*f+4)*sizeof(float)>>>
 		((half*)A, x, b, batchSize, f, cgIter);
@@ -719,7 +722,7 @@ void updateXWithCGHost(float * A, float * x, float * b, const int batchSize, con
 	delete [] h_b;
 	*/
 	#endif
-}		
+}
 
 
 //fused kernel, use thetaT to update XT
@@ -1187,6 +1190,7 @@ alsUpdateFeature100(const int batch_offset,
 //*/		
 	}
 }
+
 void alsUpdateFeature100Host(const int batch_offset,
 		const int* csrRowIndex, const int* csrColIndex, const float lambda, const int m, const int F,
 		const float* __restrict__ thetaT, float* XT, float* ythetaT, int cgIter){
