@@ -33,7 +33,7 @@ float blockReduceSum(float* shared, float val) {
     __syncthreads();              // Wait for all partial reductions
     //read from shared memory only if that warp existed
     val = (threadIdx.x <= blockDim.x / WARP_SIZE) ? shared[lane] : 0;
-    if (wid == 0) val = warpReduceSum(val); //Final reduce within first warp
+    if (wid == 0) { val = warpReduceSum(val); } //Final reduce within first warp
 #ifdef DEBUG
     //printf("RETURN block id %d, wid %d, lane %d, blockReduceSum: %f \n", blockIdx.x, wid, lane, val);
 #endif
@@ -54,8 +54,8 @@ void blockReduceSumWithAtomics(float* out, float val) {
     }
 }
 
-__global__ void fp32Array2fp16Array(const float* fp32Array, half* fp16Array, const int size);
+__global__ void fp32Array2fp16Array(const float* fp32Array, half* fp16Array, int size);
 
-__global__ void fp16Array2fp32Array(float* fp32Array, const half* fp16Array, const int size);
+__global__ void fp16Array2fp32Array(float* fp32Array, const half* fp16Array, int size);
 
 #endif

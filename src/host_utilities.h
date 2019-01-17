@@ -14,22 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- /*
- * define some host utility functions, 
- * such as timing and data loading (to host memory)
- */
+
 #ifndef HOST_UTILITIES_H_
 #define HOST_UTILITIES_H_
 
 void loadCSRSparseMatrixBin(const char* dataFile, const char* rowFile, const char* colFile,
-        float* data, int* row, int* col, const int m, const long nnz);
+                            float* data, int* row, int* col, const int m, const long nnz);
 
 void loadCSCSparseMatrixBin(const char* dataFile, const char* rowFile, const char* colFile,
-        float * data, int* row, int* col, const int n, const long nnz);
+                            float* data, int* row, int* col, const int n, const long nnz);
 
 void loadCooSparseMatrixRowPtrBin(const char* rowFile, int* row, const long nnz);
 
 void loadCooSparseMatrixBin(const char* dataFile, const char* rowFile, const char* colFile,
-        float* data, int* row, int* col, const long nnz);
+                            float* data, int* row, int* col, const long nnz);
 
 #endif
