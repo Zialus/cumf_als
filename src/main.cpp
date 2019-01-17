@@ -12,6 +12,7 @@
 #include<stdlib.h>
 #include<stdio.h>
 #include <string>
+#include <chrono>
 
 #define DEVICEID 0
 #define ITERS 10
@@ -84,10 +85,8 @@ int main(int argc, char **argv) {
 			nnz_test * sizeof(cooColIndexTestHostPtr[0]));
 	float* cooValHostTestPtr = (float *) malloc(nnz_test * sizeof(cooValHostTestPtr[0]));
 
-	struct timeval tv0;
-	gettimeofday(&tv0, NULL);
 
-	
+
 	loadCooSparseMatrixBin( (DATA_DIR + "/R_test_coo.data.bin").c_str(), (DATA_DIR + "/R_test_coo.row.bin").c_str(), 
 							(DATA_DIR + "/R_test_coo.col.bin").c_str(),
 			cooValHostTestPtr, cooRowIndexTestHostPtr, cooColIndexTestHostPtr, nnz_test);
@@ -136,7 +135,7 @@ int main(int argc, char **argv) {
 	printf("\n");
 	
 	#endif
-	double t0 = seconds();
+	auto t0 = std::chrono::high_resolution_clock::now();
 	
 	doALS(csrRowIndexHostPtr, csrColIndexHostPtr, csrValHostPtr,
 			cscRowIndexHostPtr, cscColIndexHostPtr, cscValHostPtr,
@@ -144,7 +143,9 @@ int main(int argc, char **argv) {
 			cooRowIndexTestHostPtr, cooColIndexTestHostPtr, cooValHostTestPtr,
 			m, n, f, nnz, nnz_test, lambda,
 			ITERS, X_BATCH, THETA_BATCH, DEVICEID);
-	printf("\ndoALS takes seconds: %.3f for F = %d\n", seconds() - t0, f);
+	auto t1 = std::chrono::high_resolution_clock::now();;
+	std::chrono::duration<double> deltaT = t1 - t0;
+	printf("\ndoALS takes seconds: %.3f for F = %d\n", deltaT.count(), f);
 
 	/*
 	//write out the model	

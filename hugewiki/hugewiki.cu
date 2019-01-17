@@ -12,8 +12,8 @@
 #include <cublas_v2.h>
 #include <iostream>
 #include <fstream>
-#include <sys/time.h>
 #include <cusparse.h>
+#include <chrono>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -2073,7 +2073,7 @@ inline void updateX(const int batch_id, const int batch_size, const long batch_o
 		cublasHandle_t handle, const int m, const int n, const int f, const int nnz,
 		float** devPtrTTHost, float **devPtrYthetaTHost,
 		float **devPtrTT, float **devPtrYthetaT, int *P, int *INFO){
-	double t0 = seconds();
+    auto t0 = std::chrono::high_resolution_clock::now();
 	//left-hand side pointers
 	for (int k = 0; k < batch_size; k++) {
 		devPtrTTHost[k] = &tt[k * F * F];
@@ -2415,12 +2415,6 @@ int main() {
 	cusparseSetMatIndexBase(descr, CUSPARSE_INDEX_BASE_ZERO);
 
 
-	//variable used to time
-	double t0;
-	double elapsed = 0.0;
-	struct timeval tv;
-	struct timeval start_tv;
-
 	const float alpha = 1.0f;
 	const float beta = 0.0f;
 	for(int gpu_id = 0; gpu_id < GPU_COUNT; gpu_id ++){
@@ -2435,7 +2429,7 @@ int main() {
 	float **devPtrYthetaTHost[GPU_COUNT];
 	for(int iter = 0; iter < ITERS ; iter ++){
 		printf("---------------------------update X iteration %d ----------------------------------\n", iter);
-		t0 = seconds();
+		auto t0 = std::chrono::high_resolution_clock::now();
 		//parallel in all GPUs, or only 1
 		int parallelism_level = GPU_COUNT;
 		omp_set_num_threads(parallelism_level);
@@ -2495,8 +2489,7 @@ int main() {
                      counter =  counter + 1;
                 }
 
-				double t2 = 0;
-				t2 = seconds();
+				auto t2 = std::chrono::high_resolution_clock::now();
 				if(batch_id != X_BATCH - 1)
 					batch_size = m/X_BATCH;
 				batch_offset = batch_id * (m/X_BATCH);
@@ -2524,9 +2517,11 @@ int main() {
 				cudaDeviceSynchronize();
 				cudaCheckError();
 				//generate left-hand: tt: batch_size*(F*F)
+				auto tX = std::chrono::high_resolution_clock::now();
+				std::chrono::duration<double> elapsed = tX - t2;
 				printf("\t\t batch %d before tt kernel gpu: %d, seconds: %f \n",
-						batch_id, gpu_id, seconds() - t2);
-				double t1 = seconds();
+						batch_id, gpu_id, elapsed.count());
+				auto t1 = std::chrono::high_resolution_clock::now();
 				#ifdef CUMF_TT_FP16
 				get_hermitian100_tt_fp16<<<batch_size, 64, SCAN_BATCH * f/2*sizeof(float2)>>>
 					(0, (half2*) tt, csrRowIndex[gpu_id], csrColIndex[gpu_id], lambda, batch_size, thetaT[gpu_id]);
@@ -2540,9 +2535,11 @@ int main() {
 				#endif
 				cudaDeviceSynchronize();
 				cudaCheckError();
+				tX = std::chrono::high_resolution_clock::now();
+				elapsed = tX - t1;
 				printf("\t\t batch %d tt kernel gpu: %d, seconds: %f \n",
-						batch_id, gpu_id, seconds() - t1);
-				t1 = seconds();
+						batch_id, gpu_id, elapsed.count());
+				t1 = std::chrono::high_resolution_clock::now();
 /*				
 				#ifdef CUMF_SAVE_MODEL
 				if(iter==0&&batch_id==0)
@@ -2576,15 +2573,19 @@ int main() {
 				#endif	
 				cudacall(cudaFree(XT));
 //*/				
-
+				tX = std::chrono::high_resolution_clock::now();
+				elapsed = tX - t1;
 				printf("\t\t batch %d updateX by solving tt , gpu: %d, seconds: %f \n",
-						batch_id, gpu_id, seconds() - t1);
-				printf("\tbatch %d on gpu %d, runs %f \n", batch_id, gpu_id, seconds() - t2);
+						batch_id, gpu_id, elapsed.count());
+				tX = std::chrono::high_resolution_clock::now();
+				elapsed = tX - t2;
+				printf("\tbatch %d on gpu %d, runs %f \n", batch_id, gpu_id, elapsed.count());
 
 
 			}//end of update x batch
-
-			printf("update X run %f seconds at gpu %d.\n", seconds() - t0, gpu_id);
+			auto tX = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<double> elapsed = tX - t0;
+			printf("update X run %f seconds at gpu %d.\n", elapsed.count(), gpu_id);
 			cudacall(cudaFree(ytheta));
 			cudacall(cudaFree(tt));
 			cudacall(cudaFree(csrVal[gpu_id]));
@@ -2601,10 +2602,12 @@ int main() {
 
 		}//end of omp parallel loop
 
-		printf("update X run %f seconds, gridSize: %d \n", seconds() -  t0, m);
+		auto tX = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double> elapsed = tX - t0;
+		printf("update X run %f seconds, gridSize: %d \n", elapsed.count(), m);
 
 
-		gettimeofday(&start_tv, NULL);
+		auto start = std::chrono::high_resolution_clock::now();
 		printf("---------------------------------- update theta iteration %d----------------------------------\n",
 				iter);
 		//in batches, when N is huge
@@ -2625,7 +2628,7 @@ int main() {
 			float * xx[GPU_COUNT];
 
 			omp_set_num_threads(GPU_COUNT);
-			t0 = seconds();
+			t0 = std::chrono::high_resolution_clock::now();
 #pragma omp parallel
 			{
 				int gpu_id = omp_get_thread_num();
@@ -2634,7 +2637,7 @@ int main() {
 					offset += csc_m[k];
 				cudacall(cudaSetDevice(gpu_id));
 				printf("\tGather xx on GPU %d.\n",gpu_id);
-				double t1 = seconds();
+				auto t1 = std::chrono::high_resolution_clock::now();
 				//distribute XT[] to XT_d[i]
 				cudacall(cudaMalloc((void** ) &XT_d[gpu_id], f * csc_m[gpu_id] * sizeof(float)));
 				//printf("offset: %lld, copy XT_h[%lld] to XT_d[%d]:\n", offset, offset*f, gpu_id);
@@ -2654,8 +2657,10 @@ int main() {
 				cudacall(cudaMalloc((void** ) &yTXT[gpu_id], f * batch_size * sizeof(float)));
 				cudacall(cudaMalloc((void** ) &yTX[gpu_id], f * batch_size * sizeof(float)));
 				cudacall(cudaMalloc((void** ) &xx[gpu_id], f * f * batch_size * sizeof(float)));
+				auto tX = std::chrono::high_resolution_clock::now();
+				std::chrono::duration<double> elapsed = tX - t1;
 				printf("\t\tbatch %d memory alloc and cpy gpu %d seconds: %f.\n",
-						batch_id, gpu_id, seconds() - t1);
+						batch_id, gpu_id, elapsed.count());
 
 
 				//in place update: cscColIndex --> cscColIndex - cscColIndex[0]
@@ -2664,7 +2669,7 @@ int main() {
 				//process right-hand side: (Y'*X)'
 				cudaDeviceSynchronize();
 				cudaCheckError();
-				t1 = seconds();
+				t1 = std::chrono::high_resolution_clock::now();
 				cusparseScsrmm2(cushandle[gpu_id], CUSPARSE_OPERATION_NON_TRANSPOSE,
 						CUSPARSE_OPERATION_TRANSPOSE, batch_size, f, csc_m[gpu_id],
 						batch_nnz, &alpha, descr, cscVal[gpu_id], cscColIndex[gpu_id],
@@ -2673,9 +2678,11 @@ int main() {
 						(const float * ) yTX[gpu_id], batch_size, &beta, yTXT[gpu_id], f, yTXT[gpu_id], f);
 				cudaDeviceSynchronize();
 				cudaCheckError();
-				printf("\t\tbatch %d right-hand side gpu %d seconds: %f.\n", batch_id, gpu_id, seconds() - t1);
+				tX = std::chrono::high_resolution_clock::now();
+				elapsed = tX - t1;
+				printf("\t\tbatch %d right-hand side gpu %d seconds: %f.\n", batch_id, gpu_id, elapsed.count());
 				//process left-hand side: generate hessian matrix xx
-				t1 = seconds();
+				t1 = std::chrono::high_resolution_clock::now();
 				get_hermitian_theta<<<batch_size, 64>>>
 						(xx[gpu_id], cscRowIndex[gpu_id], cscColIndex[gpu_id], lambda, XT_d[gpu_id]);
 				//get_hermitian100<<<batch_size, 64, SCAN_BATCH * f/2*sizeof(float2)>>>
@@ -2685,19 +2692,25 @@ int main() {
 				//		(xx[gpu_id], cscRowIndex[gpu_id], cscColIndex[gpu_id], lambda, XT_d[gpu_id]);
 				cudaDeviceSynchronize();
 				cudaCheckError();
-				printf("\t\tbatch %d xx kernel gpu %d seconds: %f.\n", batch_id, gpu_id, seconds() - t1);
-				t1 = seconds();
+				tX = std::chrono::high_resolution_clock::now();
+				elapsed = tX - t1;
+				printf("\t\tbatch %d xx kernel gpu %d seconds: %f.\n", batch_id, gpu_id, elapsed.count());
+				t1 = std::chrono::high_resolution_clock::now();
 				cudacall(cudaFree(yTX[gpu_id]));
 				cudacall(cudaFree(cscRowIndex[gpu_id]));
 				cudacall(cudaFree(cscColIndex[gpu_id]));
 				cudacall(cudaFree(cscVal[gpu_id]));
-				printf("\t\tbatch %d cudaFree gpu %d seconds: %f.\n", batch_id, gpu_id, seconds() - t1);
+				tX = std::chrono::high_resolution_clock::now();
+				elapsed = tX - t1;
+				printf("\t\tbatch %d cudaFree gpu %d seconds: %f.\n", batch_id, gpu_id, elapsed.count());
 
 			}
+			tX = std::chrono::high_resolution_clock::now();
+			elapsed = tX - t0;
 			printf("\tbatch %d gather xx in %d GPUs run %f seconds.\n",
-					batch_id, GPU_COUNT, seconds() - t0);
+					batch_id, GPU_COUNT, elapsed.count());
 
-			t0 = seconds();
+			t0 = std::chrono::high_resolution_clock::now();
 			printf("\t\tadd xx before updateTheta on a given GPU.\n");
 			//xx[0] += xx[1] + xx[2] + xx[3]
 			cudacall(cudaSetDevice(0));
@@ -2730,8 +2743,10 @@ int main() {
 			cudacall(cudaFree(yTXT_hotel));
 			//printf("*******invoke updateTheta with batch_size: %d, batch_offset: %d.\n", batch_size, batch_offset);
 			updateTheta(batch_size, batch_offset, xx[0], yTXT[0], thetaT[0], handle[0], n,  f);
+			tX = std::chrono::high_resolution_clock::now();
+			elapsed = tX - t0;
 			printf("\tbatch: %d gather and updateTheta in one GPU run %f seconds.\n",
-					batch_id, seconds() - t0);
+					batch_id, elapsed.count());
 
 			for(int gpu_id = 0; gpu_id < GPU_COUNT; gpu_id ++){
 				cudacall(cudaFree(xx[gpu_id]));
@@ -2743,10 +2758,10 @@ int main() {
 		//propagate thetaT[0] to non-anchor devices
 		for(int gpu_id = 1; gpu_id < GPU_COUNT; gpu_id ++)
 			cudacall( cudaMemcpy(thetaT[gpu_id], thetaT[0], n * F * sizeof(float), cudaMemcpyDeviceToDevice) );
-		gettimeofday(&tv, NULL);
-		elapsed = (tv.tv_sec - start_tv.tv_sec)
-				+ (tv.tv_usec - start_tv.tv_usec) / 1000000.0;
-		printf("update theta run %f seconds, gridSize: %d.\n", elapsed, n);
+		auto end = std::chrono::high_resolution_clock::now();
+
+		elapsed = end - start;
+		printf("update theta run %f seconds, gridSize: %d.\n", elapsed.count(), n);
 		//////////////////////////////////////////////////////////////////////////////////////////////////
 
 		printf("Calculate RMSE in batches.\n");

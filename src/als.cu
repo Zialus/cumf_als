@@ -36,6 +36,7 @@
 #include "cg.h"
 #include "host_utilities.h"
 #include <fstream>
+#include <chrono>
 
 #ifdef CUMF_USE_HALF
 #define SCAN_BATCH 24
@@ -56,9 +57,8 @@ int updateX(const int batch_size, const int batch_offset, float * ythetaT, float
 		cublasHandle_t handle, const int m, const int n, const int f, const int nnz,
 		float** devPtrTTHost, float **devPtrYthetaTHost){
 	#ifdef DEBUG
-	float elapsed;
-	struct timeval tv0, tv1, tv2;
-	gettimeofday(&tv0, NULL);
+	std::chrono::duration<double> elapsed;
+	auto t0 = std::chrono::high_resolution_clock::now();
 	printf("*******Batch LU factorization of tt.\n");
 	#endif
 	//pointers needed by batch op
@@ -75,10 +75,9 @@ int updateX(const int batch_size, const int batch_offset, float * ythetaT, float
 
 	cudaThreadSynchronize();
 	#ifdef DEBUG
-	gettimeofday(&tv1, NULL);
-	elapsed = (tv1.tv_sec - tv0.tv_sec)
-			+ (tv1.tv_usec - tv0.tv_usec) / 1000000.0;
-	printf("\t %f seconds. \n", elapsed);
+	auto t1 = std::chrono::high_resolution_clock::now();
+	elapsed = t1 - t0;
+	printf("\t %f seconds. \n", elapsed.count());
 
 	printf("*******solve: tt * XT = ythetaT use cublas, with LU decomposition.\n");
 	#endif
@@ -105,10 +104,9 @@ int updateX(const int batch_size, const int batch_offset, float * ythetaT, float
 	cudacall( cudaMemcpy(&XT[batch_offset * f], &ythetaT[batch_offset * f],
 			batch_size * f * sizeof(float), cudaMemcpyDeviceToDevice) );
 	#ifdef DEBUG
-	gettimeofday(&tv2, NULL);
-	elapsed = (tv2.tv_sec - tv1.tv_sec)
-			+ (tv2.tv_usec - tv1.tv_usec) / 1000000.0;
-	printf("\t %f seconds. \n", elapsed);
+	auto t2 = std::chrono::high_resolution_clock::now();
+	elapsed = t2 - t1;
+	printf("\t %f seconds. \n", elapsed.count());
 	#endif
 
 	cudacall(cudaFree(devPtrTT));
@@ -125,9 +123,8 @@ int updateTheta(const int batch_size, const int batch_offset, float * xx,
 		 float ** devPtrXXHost, float **devPtrYTXTHost ){
 
 	#ifdef DEBUG
-	float elapsed;
-	struct timeval tv0, tv1, tv2;
-	gettimeofday(&tv0, NULL);
+	std::chrono::duration<double> elapsed;
+	auto t0 = std::chrono::high_resolution_clock::now();
 	printf("*******LU factorize xx.\n");
 	#endif
 	float **devPtrXX = 0;
@@ -143,10 +140,9 @@ int updateTheta(const int batch_size, const int batch_offset, float * xx,
 	cublascall(cublasSgetrfBatched(handle, f, devPtrXX, f, NULL, INFO, batch_size));
 	cudaThreadSynchronize();
 	#ifdef DEBUG
-	gettimeofday(&tv1, NULL);
-	elapsed = (tv1.tv_sec - tv0.tv_sec)
-			+ (tv1.tv_usec - tv0.tv_usec) / 1000000.0;
-	printf("\t %f seconds. \n", elapsed);
+	auto t1 = std::chrono::high_resolution_clock::now();
+	elapsed = t1 - t0;
+	printf("\t %f seconds. \n", elapsed.count());
 
 	printf("******* solve xx * thetaT = yTXT with CUDA 7.\n");
 	#endif
@@ -172,10 +168,9 @@ int updateTheta(const int batch_size, const int batch_offset, float * xx,
 	cudacall( cudaMemcpy( &thetaT[batch_offset * f], &yTXT[batch_offset * f],
 	                        batch_size * f * sizeof(float), cudaMemcpyDeviceToDevice) );
 	#ifdef DEBUG
-	gettimeofday(&tv2, NULL);
-	elapsed = (tv2.tv_sec - tv1.tv_sec)
-			+ (tv2.tv_usec - tv1.tv_usec) / 1000000.0;
-	printf("\t %f seconds. \n", elapsed);
+	auto t2 = std::chrono::high_resolution_clock::now();
+	elapsed = t2 - t1;
+	printf("\t %f seconds. \n", elapsed.count());
 	#endif
 
 	cudaFree(devPtrXX);
@@ -714,18 +709,12 @@ float doALS(const int* csrRowIndexHostPtr, const int* csrColIndexHostPtr, const 
 	cusparseSetMatType(descr, CUSPARSE_MATRIX_TYPE_GENERAL);
 	cusparseSetMatIndexBase(descr, CUSPARSE_INDEX_BASE_ZERO);
 
-	#ifdef DEBUG
-	//variable used to time
-	double t0 = 0;
-	double t1 = 0;
-	#endif
-
 	printf("*******start iterations...\n");
 	for(int iter = 0; iter < ITERS ; iter ++){
 		#ifdef DEBUG
 		printf("---------------------------ALS iteration %d, update X.----------------------------------\n", iter);
-		t0 = seconds();
-		t1 = seconds();
+        auto t0 = std::chrono::high_resolution_clock::now();
+        auto t1 = std::chrono::high_resolution_clock::now();
 		#endif
 		//copy csr matrix in
 		cudacall(cudaMalloc((void** ) &csrRowIndex,(m + 1) * sizeof(csrRowIndex[0])));
@@ -757,7 +746,9 @@ float doALS(const int* csrRowIndexHostPtr, const int* csrColIndexHostPtr, const 
 		cudacall(cudaFree(ytheta));
 		cudacall(cudaFree(csrVal));
 		#ifdef DEBUG
-		printf("\tgenerate: Y*theta run %f seconds.\n", seconds() - t1);
+		auto tX = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double> elapsed = tX - t1;
+		printf("\tgenerate: Y*theta run %f seconds.\n", elapsed.count());
 		#endif
 
 		int block_dim = f/T10*(f/T10+1)/2;
@@ -779,7 +770,7 @@ float doALS(const int* csrRowIndexHostPtr, const int* csrColIndexHostPtr, const 
 			cudacall(cudaMalloc((void** ) &tt, f * f * batch_size * sizeof(float)));
 			#endif
 			#ifdef DEBUG
-			t1 = seconds();
+			t1 = std::chrono::high_resolution_clock::now();
 			printf("\tupdateXByBlock kernel.\n");
 			#endif
 			if(f == 100){
@@ -815,8 +806,10 @@ float doALS(const int* csrRowIndexHostPtr, const int* csrColIndexHostPtr, const 
 			cudaDeviceSynchronize();
 			cudaCheckError();
 			#ifdef DEBUG
-			printf("\tupdate X kernel run %f seconds, gridSize: %d, blockSize %d.\n", seconds() - t1, batch_size, f);
-			t1 = seconds();
+			tX = std::chrono::high_resolution_clock::now();
+			elapsed = tX - t1;
+			printf("\tupdate X kernel run %f seconds, gridSize: %d, blockSize %d.\n", elapsed.count(), batch_size, f);
+			t1 = std::chrono::high_resolution_clock::now();
 			#endif
 			#ifdef USE_CG	//use CG iterative solver
 				#ifdef CUMF_TT_FP16
@@ -839,12 +832,16 @@ float doALS(const int* csrRowIndexHostPtr, const int* csrColIndexHostPtr, const 
 			#endif
 			#ifdef DEBUG
 			printf("\tinvoke updateX with batch_size: %d, batch_offset: %d..\n", batch_size, batch_offset);
-			printf("\tupdateX solver run seconds: %f \n", seconds() - t1);
+			tX = std::chrono::high_resolution_clock::now();
+			elapsed = tX - t1;
+			printf("\tupdateX solver run seconds: %f \n", elapsed.count());
 			#endif
 			cudacall(cudaFree(tt));
 		}
 		#ifdef DEBUG
-		printf("update X run %f seconds, gridSize: %d, blockSize %d.\n", seconds() - t0, m, f);
+		tX = std::chrono::high_resolution_clock::now();
+		elapsed = tX - t0;
+		printf("update X run %f seconds, gridSize: %d, blockSize %d.\n", elapsed.count(), m, f);
 		#endif
 		cudacall(cudaFree(csrRowIndex));
 		cudacall(cudaFree(csrColIndex));
@@ -852,8 +849,8 @@ float doALS(const int* csrRowIndexHostPtr, const int* csrColIndexHostPtr, const 
 
 ///*
 		#ifdef DEBUG
-		t0 = seconds();
-		t1 = seconds();
+		t0 = std::chrono::high_resolution_clock::now();
+		t1 = std::chrono::high_resolution_clock::now();
 		printf("---------------------------------- ALS iteration %d, update theta ----------------------------------\n", iter);
 		printf("\tgenerate: Y'*X using cusparse.\n");
 		#endif
@@ -872,7 +869,9 @@ float doALS(const int* csrRowIndexHostPtr, const int* csrColIndexHostPtr, const 
 		cudaDeviceSynchronize();
 		cudacall(cudaFree(yTX));
 		#ifdef DEBUG
-		printf("\tgenerate: Y'*X run %f seconds.\n", seconds() - t1);
+		tX = std::chrono::high_resolution_clock::now();
+		elapsed = tX - t1;
+		printf("\tgenerate: Y'*X run %f seconds.\n", elapsed.count());
 		#endif
 		//in batches, when N is huge
 		for(int batch_id = 0; batch_id< THETA_BATCH; batch_id ++){
@@ -895,7 +894,7 @@ float doALS(const int* csrRowIndexHostPtr, const int* csrColIndexHostPtr, const 
 			cudacall( cudaMemset(xx, 0, f*f*batch_size*sizeof(float)) );
 			#endif
 			#ifdef DEBUG
-			t1 = seconds();
+			t1 = std::chrono::high_resolution_clock::now();
 			printf("\tupdateThetaByBlock kernel.\n");
 			#endif
 			//get_hermitian_theta<<<batch_size, 64>>>(batch_offset, xx, cscRowIndex, cscColIndex, lambda, n);
@@ -922,9 +921,11 @@ float doALS(const int* csrRowIndexHostPtr, const int* csrColIndexHostPtr, const 
 			cudaDeviceSynchronize();
 			cudaCheckError();
 			#ifdef DEBUG
+			tX = std::chrono::high_resolution_clock::now();
+			elapsed = tX - t1;
 			printf("\tupdate Theta kernel run %f seconds, gridSize: %d, blockSize %d.\n",
-					seconds() - t1, batch_size, f);
-			t1 = seconds();
+					elapsed.count(), batch_size, f);
+			t1 = std::chrono::high_resolution_clock::now();
 			#endif			
 			#ifdef DEBUG
 			printf("*******invoke updateTheta with batch_size: %d, batch_offset: %d.\n", batch_size, batch_offset);
@@ -951,14 +952,18 @@ float doALS(const int* csrRowIndexHostPtr, const int* csrColIndexHostPtr, const 
 			cudacall(cudaFreeHost(devPtrYTXTHost));
 			#endif
 			#ifdef DEBUG
-			printf("\tupdateTheta solver run seconds: %f \n", seconds() - t1);
+			tX = std::chrono::high_resolution_clock::now();
+			elapsed = tX - t1;
+			printf("\tupdateTheta solver run seconds: %f \n", elapsed.count());
 			#endif
 			cudacall(cudaFree(xx));
 		}
 		cudacall(cudaFree(yTXT));
 		#ifdef DEBUG
+		tX = std::chrono::high_resolution_clock::now();
+		elapsed = tX - t0;
 		printf("update theta run %f seconds, gridSize: %d, blockSize %d.\n",
-				seconds() - t0, n, f);
+				elapsed.count(), n, f);
 		printf("Calculate RMSE.\n");
 		#endif
 		float * errors_train = 0;

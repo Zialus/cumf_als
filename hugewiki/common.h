@@ -1,13 +1,6 @@
-#include <sys/time.h>
 #include <iostream>
 #include <cublas_v2.h>
 #include "../src/als.h"
-inline double seconds(){
-    struct timeval tp;
-    gettimeofday(&tp, NULL);
-    return ((double)tp.tv_sec + (double)tp.tv_usec * 1.e-6);
-}
-
 
 template <typename T>
 std::string to_string(T value)

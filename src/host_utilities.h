@@ -20,13 +20,6 @@
  */
 #ifndef HOST_UTILITIES_H_
 #define HOST_UTILITIES_H_
-#include <sys/time.h>
-
-inline double seconds(){
-    struct timeval tp;
-    gettimeofday(&tp, NULL);
-    return ((double)tp.tv_sec + (double)tp.tv_usec * 1.e-6);
-}
 
 void loadCSRSparseMatrixBin(const char* dataFile, const char* rowFile, const char* colFile,
 		float* data, int* row, int* col, const int m, const long nnz);
