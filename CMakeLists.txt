@@ -11,13 +11,13 @@ find_package(CUDA REQUIRED)
 find_package(OpenMP REQUIRED)
 
 # Activate DEBUG define if compiled in debug mode
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG -rdynamic")
 
 # Add debugging to CUDA NVCC flags for NVidia's NSight tools.
 set(CUDA_NVCC_FLAGS_DEBUG "${CUDA_NVCC_FLAGS_DEBUG} -G")
 
 set(EXTRA_NVCC_FLAGS -arch=sm_35 -Xptxas -dlcm=ca --std=c++11)
-#set(EXTRA_NVCC_FLAGS -arch=sm_35 -Xptxas -dlcm=ca --std=c++11 -Xcompiler -rdynamic -lineinfo --ptxas-options=-v --maxrregcount 255)
+#set(EXTRA_NVCC_FLAGS -arch=sm_35 -Xptxas -dlcm=ca --std=c++11 -lineinfo --ptxas-options=-v --maxrregcount 255)
 
 set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ${EXTRA_NVCC_FLAGS})
 
