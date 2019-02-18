@@ -1,0 +1,123 @@
+[rferreira@cracs-gpu02 cumf_als]$ ./main 1000990 624961 100 252800275 4003960 1.4 6 3 ./data/yahoo/
+M = 1000990, N = 624961, F = 100, NNZ = 252800275, NNZ_TEST = 4003960, lambda = 1.400000
+X_BATCH = 6, THETA_BATCH = 3
+DATA_DIR = ./data/yahoo/
+*******start loading training and testing sets to host.
+*******parameters: m: 1000990, n:  624961, f: 100, nnz: 252800275
+*******start allocating memory on GPU...
+*******start copying memory to GPU...
+*******start iterations...
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+--------- Train RMSE in iter 0: 27.622702
+--------- Test RMSE in iter 0: 26.632671
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+--------- Train RMSE in iter 1: 24.871771
+--------- Test RMSE in iter 1: 24.435968
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+--------- Train RMSE in iter 2: 22.363405
+--------- Test RMSE in iter 2: 23.004061
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+--------- Train RMSE in iter 3: 20.445984
+--------- Test RMSE in iter 3: 23.572823
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+--------- Train RMSE in iter 4: 21.762245
+--------- Test RMSE in iter 4: 27.575478
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+--------- Train RMSE in iter 5: 20.520123
+--------- Test RMSE in iter 5: 22.416569
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+--------- Train RMSE in iter 6: 19.811897
+--------- Test RMSE in iter 6: 22.021183
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+--------- Train RMSE in iter 7: 19.268110
+--------- Test RMSE in iter 7: 21.958261
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+--------- Train RMSE in iter 8: 19.224735
+--------- Test RMSE in iter 8: 21.907808
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+	CG solver with fp32.
+--------- Train RMSE in iter 9: 19.146845
+--------- Test RMSE in iter 9: 21.869715
+
+doALS takes seconds: 333.207 for F = 100
+
+ALS Done.

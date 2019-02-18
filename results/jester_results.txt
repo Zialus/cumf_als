@@ -1,0 +1,53 @@
+./cumf_als 63978 150 100 1000000 761439 0.05 1 1 ../../../DATASETS/jester/
+M = 63978, N = 150, F = 100, NNZ = 1000000, NNZ_TEST = 761439, lambda = 0.050000
+X_BATCH = 1, THETA_BATCH = 1
+DATA_DIR = ../../../DATASETS/jester/
+*******start loading training and testing sets to host.
+*******parameters: m: 63978, n:  150, f: 100, nnz: 1000000
+*******start allocating memory on GPU...
+*******start copying memory to GPU...
+*******start iterations...
+	CG solver with fp32.
+	CG solver with fp32.
+--------- Train RMSE in iter 0: 5.984113
+--------- Test RMSE in iter 0: 4.571942
+	CG solver with fp32.
+	CG solver with fp32.
+--------- Train RMSE in iter 1: 5.544918
+--------- Test RMSE in iter 1: 5.542810
+	CG solver with fp32.
+	CG solver with fp32.
+--------- Train RMSE in iter 2: 5.544918
+--------- Test RMSE in iter 2: 5.542810
+	CG solver with fp32.
+	CG solver with fp32.
+--------- Train RMSE in iter 3: 5.544918
+--------- Test RMSE in iter 3: 5.542810
+	CG solver with fp32.
+	CG solver with fp32.
+--------- Train RMSE in iter 4: 5.544918
+--------- Test RMSE in iter 4: 5.542810
+	CG solver with fp32.
+	CG solver with fp32.
+--------- Train RMSE in iter 5: 5.544918
+--------- Test RMSE in iter 5: 5.542810
+	CG solver with fp32.
+	CG solver with fp32.
+--------- Train RMSE in iter 6: 5.544918
+--------- Test RMSE in iter 6: 5.542810
+	CG solver with fp32.
+	CG solver with fp32.
+--------- Train RMSE in iter 7: 5.544918
+--------- Test RMSE in iter 7: 5.542810
+	CG solver with fp32.
+	CG solver with fp32.
+--------- Train RMSE in iter 8: 5.544918
+--------- Test RMSE in iter 8: 5.542810
+	CG solver with fp32.
+	CG solver with fp32.
+--------- Train RMSE in iter 9: 5.544918
+--------- Test RMSE in iter 9: 5.542810
+
+doALS takes seconds: 5.235 for F = 100
+
+ALS Done.
