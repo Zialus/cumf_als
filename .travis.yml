@@ -36,6 +36,9 @@ matrix:
     - os: linux
       dist: xenial
       env: CUDA=10.0.130-1
+    - os: linux
+      dist: xenial
+      env: CUDA=10.1.105-1
     - os : osx
       osx_image: xcode7.3
       env: CUDA=7.5.27
@@ -64,6 +67,10 @@ matrix:
       osx_image: xcode9.4
       env: CUDA=10.0.130
       before_install: *cuda_install
+    - os : osx
+      osx_image: xcode10.1
+      env: CUDA=10.1.105
+      before_install: *cuda_install
 
     # SONARCLOUD
     - os: linux
@@ -83,11 +90,28 @@ matrix:
         - sonar-scanner
       env:
         - SONAR_CLOUD="YUP"
-        - CUDA=10.0.130-1
+        - CUDA=10.1.105-1
+
+    # COVERITY_SCAN
+    - os: linux
+      dist: xenial
+      addons:
+        coverity_scan:
+          project:
+            name: "Zialus/cumf_als"
+          notification_email: raulmendesferreira@gmail.com
+          build_command_prepend: "git fetch --unshallow && mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release .."
+          build_command: "make"
+          branch_pattern: master
+      script:
+        - echo "Coverity Scan"
+      env:
+        - secure: "Ho69S2Zvtc40mZLVj54R4ss+Yb/+l9TiDCD5rsDKBpQNzO9GLGkPb646dw6md807qR+mSYkmZiMNVwS4q16fzNKw/ZqmBDMBcqlAANsGvZxGwrAoMgsPrTv3HtHu1GOIcxMk6SzGd1aP/CyDVv5dojyQn5IjxBovkfZ3/rEZ0AQkIo4bG+elt78iBSBNwnqsqcJqTykdRm6O9xMAjLIsPdIF8J/NxYYZDl4vBlmULDB53V3wI2FrxoT6NYvJgclbyoOdgVmduzigPZdJFzAE1S1f+3f5KR7K9oH1KYXTMrmLsoYNVkXEjsjgj9+81cIc+rbKcdMIP/k4P1vwXxgX9Uw1xvlumYzdIzxNy2dS3mPbsA0TQbWGH6Bpp6GrJ2aA5L9X2wLoRKAtkUTYWRneqb4GJ2Kw4Ve8zCrRsfR+IFi64QK1W62fmzNTs0H1toHtjghJnlzxdfAjIJQet/erRjW29JDJqMtELLWB1ol6sOyigBX5swXEFzoB0/rEN6VDBL19lOt5OXZUPPtYTKTEiUS27mGhYwDtuE+wmlZA+aS66/iy82MGFvjz0BHOZqqCRThBz9LKGd4O3iYKA43Ahzh6q75t0CI3ec9Xg/X3uRBNBN/oniCW5DybMuay1UOMp3//OB+OE9dlg8c/0uqMYcP5t59vINXYohqPmp7qqaI="
+        - CUDA=10.1.105-1
 
 before_install:
-  - wget https://cmake.org/files/v3.13/cmake-3.13.2-Linux-x86_64.sh
-  - sudo sh cmake-3.13.2-Linux-x86_64.sh --prefix=/home/travis/.local/ --exclude-subdir
+  - wget https://github.com/Kitware/CMake/releases/download/v3.14.0-rc2/cmake-3.14.0-rc2-Linux-x86_64.sh
+  - sudo sh cmake-3.14.0-rc2-Linux-x86_64.sh --prefix=/home/travis/.local/ --exclude-subdir
   - source ./.ci/travis_linux
 
 install:
@@ -98,9 +122,8 @@ install:
   - g++ --version
 
 script:
-  - mkdir build
-  - cd build
-  - cmake ..
+  - mkdir build && cd build
+  - cmake -DCMAKE_BUILD_TYPE=Release ..
   - make
 
 after_failure:
