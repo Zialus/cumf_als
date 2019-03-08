@@ -13,6 +13,9 @@ find_package(OpenMP REQUIRED)
 # Activate DEBUG define if compiled in debug mode
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG -rdynamic")
 
+# There seems to be a bug with CMake, which makes it not add OpenMP flags to the nvcc Xcompiler option
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+
 # Add debugging to CUDA NVCC flags for NVidia's NSight tools.
 set(CUDA_NVCC_FLAGS_DEBUG "${CUDA_NVCC_FLAGS_DEBUG} -G")
 
