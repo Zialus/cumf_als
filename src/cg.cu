@@ -28,6 +28,7 @@
 #include "host_utilities.h"
 
 #include <fstream>
+#include <device_launch_parameters.h>
 
 #define SCAN_BATCH 24
 #define CG_ERROR 1e-4

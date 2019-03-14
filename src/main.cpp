@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
     unsigned int seed = 0;
     srand(seed);
     for (int k = 0; k < n * f; k++) {
-        thetaTHost[k] = (float)0.2 * ((float) rand() / (float) RAND_MAX);
+        thetaTHost[k] = (float) 0.2 * ((float) rand() / (float) RAND_MAX);
     }
     //CG needs to initialize X as well
     for (int k = 0; k < m * f; k++) {
@@ -141,20 +141,9 @@ int main(int argc, char** argv) {
           cooRowIndexHostPtr, thetaTHost, XTHost, cooRowIndexTestHostPtr, cooColIndexTestHostPtr, cooValHostTestPtr,
           m, n, f, nnz, nnz_test, lambda, ITERS, X_BATCH, THETA_BATCH, DEVICEID);
 
-    auto t1 = std::chrono::high_resolution_clock::now();;
+    auto t1 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> deltaT = t1 - t0;
     printf("\ndoALS takes seconds: %.3f for F = %d\n", deltaT.count(), f);
-
-    /*
-    //write out the model
-    FILE * xfile = fopen("XT-Yahoo.data", "wb");
-    FILE * thetafile = fopen("thetaT-Yahoo.data", "wb");
-    fwrite(XTHost, sizeof(float), m*f, xfile);
-    fwrite(thetaTHost, sizeof(float), n*f, thetafile);
-    fclose(xfile);
-    fclose(thetafile);
-    */
-
 
     cudaFreeHost(csrRowIndexHostPtr);
     cudaFreeHost(csrColIndexHostPtr);
