@@ -37,6 +37,7 @@
 #include "host_utilities.h"
 #include <fstream>
 #include <chrono>
+#include <device_launch_parameters.h>
 
 #ifdef CUMF_USE_HALF
 #define SCAN_BATCH 24
@@ -652,47 +653,46 @@ get_hermitianT10(const int batch_offset, float* tt,
 
 
 float doALS(const int* csrRowIndexHostPtr, const int* csrColIndexHostPtr, const float* csrValHostPtr,
-        const int* cscRowIndexHostPtr, const int* cscColIndexHostPtr, const float* cscValHostPtr,
-        const int* cooRowIndexHostPtr, float* thetaTHost, float* XTHost,
-        const int * cooRowIndexTestHostPtr, const int * cooColIndexTestHostPtr, const float * cooValHostTestPtr,
-        const int m, const int n, const int f, const long nnz, const long nnz_test, const float lambda,
-        const int ITERS, const int X_BATCH, const int THETA_BATCH, const int DEVICEID)
-{
+            const int* cscRowIndexHostPtr, const int* cscColIndexHostPtr, const float* cscValHostPtr,
+            const int* cooRowIndexHostPtr, float* thetaTHost, float* XTHost,
+            const int* cooRowIndexTestHostPtr, const int* cooColIndexTestHostPtr, const float* cooValHostTestPtr,
+            const int m, const int n, const int f, const long nnz, const long nnz_test, const float lambda,
+            const int ITERS, const int X_BATCH, const int THETA_BATCH, const int DEVICEID) {
     cudaSetDevice(DEVICEID);
     printf("*******parameters: m: %d, n:  %d, f: %d, nnz: %ld \n", m, n, f, nnz);
     //device pointers
-    int * csrRowIndex = 0;
-    int * csrColIndex = 0;
-    float * csrVal = 0;
-    float * thetaT = 0;
-    float * tt = 0;
-    float * XT = 0;
-    float * cscVal =0;
-    int * cscRowIndex = 0;
-    int * cscColIndex = 0;
+    int* csrRowIndex = 0;
+    int* csrColIndex = 0;
+    float* csrVal = 0;
+    float* thetaT = 0;
+    float* tt = 0;
+    float* XT = 0;
+    float* cscVal = 0;
+    int* cscRowIndex = 0;
+    int* cscColIndex = 0;
     //coo to calculate RMSE
-    int * cooRowIndex =0;
-    float * cooVal_test;
-    int * cooRowIndex_test;
-    int * cooColIndex_test;
+    int* cooRowIndex = 0;
+    float* cooVal_test;
+    int* cooRowIndex_test;
+    int* cooColIndex_test;
     float final_rmse = 0;
     printf("*******start allocating memory on GPU...\n");
-    cudacall(cudaMalloc((void** ) &cscRowIndex,nnz * sizeof(cscRowIndex[0])));
-    cudacall(cudaMalloc((void** ) &cscColIndex, (n+1) * sizeof(cscColIndex[0])));
-    cudacall(cudaMalloc((void** ) &cscVal, nnz * sizeof(cscVal[0])));
+    cudacall(cudaMalloc((void**) &cscRowIndex, nnz * sizeof(cscRowIndex[0])));
+    cudacall(cudaMalloc((void**) &cscColIndex, (n + 1) * sizeof(cscColIndex[0])));
+    cudacall(cudaMalloc((void**) &cscVal, nnz * sizeof(cscVal[0])));
     //dimension: F*N
-    cudacall(cudaMalloc((void** ) &thetaT, f * n * sizeof(thetaT[0])));
+    cudacall(cudaMalloc((void**) &thetaT, f * n * sizeof(thetaT[0])));
     //dimension: M*F
-    cudacall(cudaMalloc((void** ) &XT, f * m * sizeof(XT[0])));
+    cudacall(cudaMalloc((void**) &XT, f * m * sizeof(XT[0])));
 
     printf("*******start copying memory to GPU...\n");
 
-    cudacall(cudaMemcpy(cscRowIndex, cscRowIndexHostPtr,(size_t ) nnz * sizeof(cscRowIndex[0]), cudaMemcpyHostToDevice));
-    cudacall(cudaMemcpy(cscColIndex, cscColIndexHostPtr,(size_t ) (n+1) * sizeof(cscColIndex[0]), cudaMemcpyHostToDevice));
-    cudacall(cudaMemcpy(cscVal, cscValHostPtr,(size_t ) (nnz * sizeof(cscVal[0])),cudaMemcpyHostToDevice));
-    cudacall(cudaMemcpy(thetaT, thetaTHost, (size_t ) (n * f * sizeof(thetaT[0])), cudaMemcpyHostToDevice));
+    cudacall(cudaMemcpy(cscRowIndex, cscRowIndexHostPtr, (size_t) nnz * sizeof(cscRowIndex[0]), cudaMemcpyHostToDevice));
+    cudacall(cudaMemcpy(cscColIndex, cscColIndexHostPtr, (size_t) (n + 1) * sizeof(cscColIndex[0]), cudaMemcpyHostToDevice));
+    cudacall(cudaMemcpy(cscVal, cscValHostPtr, (size_t) (nnz * sizeof(cscVal[0])), cudaMemcpyHostToDevice));
+    cudacall(cudaMemcpy(thetaT, thetaTHost, (size_t) (n * f * sizeof(thetaT[0])), cudaMemcpyHostToDevice));
     //CG needs XT
-    cudacall(cudaMemcpy(XT, XTHost, (size_t ) (m * f * sizeof(XT[0])), cudaMemcpyHostToDevice));
+    cudacall(cudaMemcpy(XT, XTHost, (size_t) (m * f * sizeof(XT[0])), cudaMemcpyHostToDevice));
 
     cudacall(cudaDeviceSetCacheConfig(cudaFuncCachePreferShared));
     //64-bit smem access
@@ -705,7 +705,7 @@ float doALS(const int* csrRowIndexHostPtr, const int* csrColIndexHostPtr, const 
     cusparseHandle_t cushandle = 0;
     cusparsecall(cusparseCreate(&cushandle));
     cusparseMatDescr_t descr;
-    cusparsecall( cusparseCreateMatDescr(&descr));
+    cusparsecall(cusparseCreateMatDescr(&descr));
     cusparseSetMatType(descr, CUSPARSE_MATRIX_TYPE_GENERAL);
     cusparseSetMatIndexBase(descr, CUSPARSE_INDEX_BASE_ZERO);
 
@@ -966,7 +966,8 @@ float doALS(const int* csrRowIndexHostPtr, const int* csrColIndexHostPtr, const 
                 elapsed.count(), n, f);
         printf("Calculate RMSE.\n");
         #endif
-        float * errors_train = 0;
+
+        float* errors_train = 0;
         int error_size = 1000;
         cudacall(cudaMalloc((void** ) &errors_train, error_size * sizeof(errors_train[0])));
         cudacall( cudaMemset(errors_train, 0, error_size*sizeof(float)) );
@@ -994,9 +995,9 @@ float doALS(const int* csrRowIndexHostPtr, const int* csrColIndexHostPtr, const 
         cudacall(cudaFree(errors_train));
 
 
-        float * errors_test = 0;
-        cudacall(cudaMalloc((void** ) &errors_test, error_size * sizeof(errors_test[0])));
-        cudacall( cudaMemset(errors_test, 0, error_size*sizeof(float)) );
+        float* errors_test = 0;
+        cudacall(cudaMalloc((void**) &errors_test, error_size * sizeof(errors_test[0])));
+        cudacall(cudaMemset(errors_test, 0, error_size * sizeof(float)));
 
         cudacall(cudaMalloc((void** ) &cooRowIndex_test, nnz_test * sizeof(cooRowIndex_test[0])));
         cudacall(cudaMemcpy(cooRowIndex_test, cooRowIndexTestHostPtr,(size_t ) (nnz_test * sizeof(cooRowIndex_test[0])), cudaMemcpyHostToDevice));
@@ -1014,10 +1015,11 @@ float doALS(const int* csrRowIndexHostPtr, const int* csrColIndexHostPtr, const 
         cudacall(cudaFree(cooColIndex_test));
         cudacall(cudaFree(cooVal_test));
 
-        float* rmse_test = (float*) malloc (sizeof(float));
-        cublascall( cublasSasum(handle, error_size, errors_test, 1, rmse_test) );
+        float* rmse_test = (float*) malloc(sizeof(float));
+        cublascall(cublasSasum(handle, error_size, errors_test, 1, rmse_test));
         cudaDeviceSynchronize();
-        final_rmse = sqrt((*rmse_test)/nnz_test);
+
+        final_rmse = sqrt((*rmse_test) / nnz_test);
         printf("--------- Test RMSE in iter %d: %f\n", iter, final_rmse);
         cudacall(cudaFree(errors_test));
 //*/		
