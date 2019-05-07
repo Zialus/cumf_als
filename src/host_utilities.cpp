@@ -68,7 +68,7 @@ void loadCooSparseMatrixRowPtrBin(const char* rowFile, int* row, const long nnz)
 #endif
 
     FILE* rFile = fopen(rowFile, "rb");
-    if (!rFile ) {
+    if (!rFile) {
         printf("Unable to open file!");
         exit(EXIT_FAILURE);
     }

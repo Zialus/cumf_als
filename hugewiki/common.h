@@ -32,7 +32,7 @@ void loadCSCSparseMatrixInBatch(const std::string dataFile, const std::string ro
     FILE* dFile = fopen(dataFile.c_str(), "rb");
     FILE* rFile = fopen(rowFile.c_str(), "rb");
     FILE* cFile = fopen(colFile.c_str(), "rb");
-    if (!rFile || !dFile || ! cFile) {
+    if (!rFile || !dFile || !cFile) {
         printf("Unable to open file!");
         exit(EXIT_FAILURE);
 
