@@ -74,7 +74,7 @@ int updateX(const int batch_size, const int batch_offset, float * ythetaT, float
     cudacall( cudaMalloc(&INFO, batch_size * sizeof(int) ));
     cublascall(cublasSgetrfBatched(handle, f, devPtrTT, f, NULL, INFO, batch_size));
 
-    cudaThreadSynchronize();
+    cudaDeviceSynchronize();
     #ifdef DEBUG
     auto t1 = std::chrono::high_resolution_clock::now();
     elapsed = t1 - t0;
@@ -95,7 +95,7 @@ int updateX(const int batch_size, const int batch_offset, float * ythetaT, float
     cublascall( cublasSgetrsBatched(handle, CUBLAS_OP_N, f, 1,
             (const float ** ) devPtrTT, f, NULL, devPtrYthetaT, f, info2, batch_size) );
 
-    cudaThreadSynchronize();
+    cudaDeviceSynchronize();
     cudaError_t cudaStat1 = cudaGetLastError();
     if (cudaStat1 != cudaSuccess) {
         fprintf(stderr,"Failed to launch cublasSgetrsBatched (error code: %s)!\n", cudaGetErrorString(cudaStat1));
@@ -139,7 +139,7 @@ int updateTheta(const int batch_size, const int batch_offset, float * xx,
     //cudacall(cudaMalloc(&P, f * batch_size * sizeof(int)));
     cudacall(cudaMalloc(&INFO, batch_size * sizeof(int)));
     cublascall(cublasSgetrfBatched(handle, f, devPtrXX, f, NULL, INFO, batch_size));
-    cudaThreadSynchronize();
+    cudaDeviceSynchronize();
     #ifdef DEBUG
     auto t1 = std::chrono::high_resolution_clock::now();
     elapsed = t1 - t0;
@@ -159,7 +159,7 @@ int updateTheta(const int batch_size, const int batch_offset, float * xx,
     int * info2 = (int *) malloc(sizeof(int));
     cublascall( cublasSgetrsBatched(handle, CUBLAS_OP_N, f, 1,
             (const float ** ) devPtrXX, f, NULL, devPtrYTXT, f, info2, batch_size) );
-    cudaThreadSynchronize();
+    cudaDeviceSynchronize();
     cudaError_t cudaStat1 = cudaGetLastError();
     if (cudaStat1 != cudaSuccess) {
         fprintf(stderr,"Failed to launch cublasSgetrsBatched (error code: %s)!\n", cudaGetErrorString(cudaStat1));

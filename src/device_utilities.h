@@ -2,19 +2,29 @@
 #define DEVICE_UTILITIES_H_
 #define WARP_SIZE 32
 
-#ifndef __CUDACC__
-#define __CUDACC__
-#endif
-
+#include <cuda.h>
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
+#include <device_launch_parameters.h>
+
+#define FULL_MASK 0xffffffff
+
+template<typename T>
+inline __device__ T shfl_down(const T val, unsigned int delta) {
+#if CUDA_VERSION >= 9000
+    return __shfl_down_sync(FULL_MASK , val, delta);
+#else
+    return __shfl_down(val, delta);
+#endif
+}
+
 
 //WARP shuffling code adopted from here:
 //https://devblogs.nvidia.com/parallelforall/faster-parallel-reductions-kepler/
 __inline__ __device__
 float warpReduceSum(float val) {
     for (int offset = WARP_SIZE / 2; offset > 0; offset /= 2) {
-        val += __shfl_down(val, offset);
+        val += shfl_down(val, offset);
     }
     return val;
 }
