@@ -17,8 +17,30 @@
 #include <string>
 #include <chrono>
 
+#include <iostream>
+
 #define DEVICEID 0
 #define ITERS 10
+
+void readInput(int m, int n, long nnz, long nnz_test, const std::string& DATA_DIR, int* csrRowIndexHostPtr,
+               int* csrColIndexHostPtr, float* csrValHostPtr, float* cscValHostPtr,
+               int* cscRowIndexHostPtr, int* cscColIndexHostPtr, int* cooRowIndexHostPtr,
+               int* cooRowIndexTestHostPtr, int* cooColIndexTestHostPtr, float* cooValHostTestPtr) {
+    loadCooSparseMatrixBin((DATA_DIR + "/R_test_coo.data.bin").c_str(), (DATA_DIR + "/R_test_coo.row.bin").c_str(),
+                           (DATA_DIR + "/R_test_coo.col.bin").c_str(),
+                           cooValHostTestPtr, cooRowIndexTestHostPtr, cooColIndexTestHostPtr, nnz_test);
+
+    loadCSRSparseMatrixBin((DATA_DIR + "/R_train_csr.data.bin").c_str(), (DATA_DIR + "/R_train_csr.indptr.bin").c_str(),
+                           (DATA_DIR + "/R_train_csr.indices.bin").c_str(),
+                           csrValHostPtr, csrRowIndexHostPtr, csrColIndexHostPtr, m, nnz);
+
+    loadCSCSparseMatrixBin((DATA_DIR + "/R_train_csc.data.bin").c_str(),
+                           (DATA_DIR + "/R_train_csc.indices.bin").c_str(),
+                           (DATA_DIR + "/R_train_csc.indptr.bin").c_str(),
+                           cscValHostPtr, cscRowIndexHostPtr, cscColIndexHostPtr, n, nnz);
+
+    loadCooSparseMatrixRowPtrBin((DATA_DIR + "/R_train_coo.row.bin").c_str(), cooRowIndexHostPtr, nnz);
+}
 
 int main(int argc, char** argv) {
     //parse input parameters
@@ -88,21 +110,15 @@ int main(int argc, char** argv) {
     int* cooColIndexTestHostPtr = (int*) malloc(nnz_test * sizeof(cooColIndexTestHostPtr[0]));
     float* cooValHostTestPtr = (float*) malloc(nnz_test * sizeof(cooValHostTestPtr[0]));
 
+    auto t4 = std::chrono::high_resolution_clock::now();
+    readInput(m, n, nnz, nnz_test, DATA_DIR, csrRowIndexHostPtr, csrColIndexHostPtr, csrValHostPtr, cscValHostPtr,
+              cscRowIndexHostPtr, cscColIndexHostPtr, cooRowIndexHostPtr, cooRowIndexTestHostPtr,
+              cooColIndexTestHostPtr,
+              cooValHostTestPtr);
 
-    loadCooSparseMatrixBin((DATA_DIR + "/R_test_coo.data.bin").c_str(), (DATA_DIR + "/R_test_coo.row.bin").c_str(),
-                           (DATA_DIR + "/R_test_coo.col.bin").c_str(),
-                           cooValHostTestPtr, cooRowIndexTestHostPtr, cooColIndexTestHostPtr, nnz_test);
-
-    loadCSRSparseMatrixBin((DATA_DIR + "/R_train_csr.data.bin").c_str(), (DATA_DIR + "/R_train_csr.indptr.bin").c_str(),
-                           (DATA_DIR + "/R_train_csr.indices.bin").c_str(),
-                           csrValHostPtr, csrRowIndexHostPtr, csrColIndexHostPtr, m, nnz);
-
-    loadCSCSparseMatrixBin((DATA_DIR + "/R_train_csc.data.bin").c_str(),
-                           (DATA_DIR + "/R_train_csc.indices.bin").c_str(),
-                           (DATA_DIR + "/R_train_csc.indptr.bin").c_str(),
-                           cscValHostPtr, cscRowIndexHostPtr, cscColIndexHostPtr, n, nnz);
-
-    loadCooSparseMatrixRowPtrBin((DATA_DIR + "/R_train_coo.row.bin").c_str(), cooRowIndexHostPtr, nnz);
+    auto t5 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> deltaT45 = t5 - t4;
+    std::cout << "[info] Loading rating data time: " << deltaT45.count() << "s.\n";
 
 
 #ifdef DEBUG
