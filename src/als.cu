@@ -55,7 +55,10 @@ void saveDeviceFloatArrayToFile(std::string fileName, int size, float* d_array){
     cudaFreeHost(h_array);
 }
 int updateX(const int batch_size, const int batch_offset, float * ythetaT, float * tt, float * XT,
-        cublasHandle_t handle, const int m, const int n, const int f, const int nnz,
+        cublasHandle_t handle,
+//        const int m, const int n,
+        const int f,
+//        const int nnz,
         float** devPtrTTHost, float **devPtrYthetaTHost){
     #ifdef DEBUG
     std::chrono::duration<double> elapsed;
@@ -120,7 +123,9 @@ int updateX(const int batch_size, const int batch_offset, float * ythetaT, float
 int updateTheta(const int batch_size, const int batch_offset, float * xx,
           float * yTXT, float * thetaT,
         cublasHandle_t handle,
-         const int m, const int n, const int f, const int nnz,
+//         const int m, const int n,
+         const int f,
+//         const int nnz,
          float ** devPtrXXHost, float **devPtrYTXTHost ){
 
     #ifdef DEBUG

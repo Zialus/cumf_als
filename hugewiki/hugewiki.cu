@@ -2069,11 +2069,14 @@ void loadCooSparseMatrix(const char* dataFile, const char* rowFile, const char* 
 	}
 }
 
-inline void updateX(const int batch_id, const int batch_size, const long batch_offset, float * ythetaT, float * tt, float * XT_h,
-		cublasHandle_t handle, const int m, const int n, const int f, const int nnz,
+inline void updateX(
+//      const int batch_id,
+        const int batch_size, const long batch_offset, float * ythetaT, float * tt, float * XT_h,
+		cublasHandle_t handle,
+//		const int m, const int n, const int f, const int nnz,
 		float** devPtrTTHost, float **devPtrYthetaTHost,
 		float **devPtrTT, float **devPtrYthetaT, int *P, int *INFO){
-    auto t0 = std::chrono::high_resolution_clock::now();
+    //auto t0 = std::chrono::high_resolution_clock::now();
 	//left-hand side pointers
 	for (int k = 0; k < batch_size; k++) {
 		devPtrTTHost[k] = &tt[k * F * F];
@@ -2495,7 +2498,7 @@ int main() {
 				batch_offset = batch_id * (m/X_BATCH);
 				int batch_nnz =
 						csrRowIndexHostPtr[batch_offset + batch_size] - csrRowIndexHostPtr[batch_offset];
-				printf("\tbatch %d of %d; size: %d, offset: %d, batch_nnz %d, on gpu %d\n",
+				printf("\tbatch %d of %d; size: %d, offset: %ld, batch_nnz %d, on gpu %d\n",
 						batch_id, X_BATCH, batch_size, batch_offset, batch_nnz, gpu_id);
 				//copy CSR rating matrices in
 				cudacall(cudaMemcpy(csrRowIndex[gpu_id], &csrRowIndexHostPtr[batch_offset],
@@ -2604,7 +2607,7 @@ int main() {
 
 		auto tX = std::chrono::high_resolution_clock::now();
 		std::chrono::duration<double> elapsed = tX - t0;
-		printf("update X run %f seconds, gridSize: %d \n", elapsed.count(), m);
+		printf("update X run %f seconds, gridSize: %ld \n", elapsed.count(), m);
 
 
 		auto start = std::chrono::high_resolution_clock::now();
@@ -2761,7 +2764,7 @@ int main() {
 		auto end = std::chrono::high_resolution_clock::now();
 
 		elapsed = end - start;
-		printf("update theta run %f seconds, gridSize: %d.\n", elapsed.count(), n);
+		printf("update theta run %f seconds, gridSize: %ld.\n", elapsed.count(), n);
 		//////////////////////////////////////////////////////////////////////////////////////////////////
 
 		printf("Calculate RMSE in batches.\n");
@@ -2795,7 +2798,7 @@ int main() {
 			cudacall(cudaMalloc((void** ) &XT_small, f * csc_m[batch_id] * sizeof(float)));
 			cudacall(cudaMemcpy(XT_small, &XT_h[(long) row_offset*f], f * csc_m[batch_id] * sizeof(float), cudaMemcpyHostToDevice));
 
-			printf("cal train rmse in batch: %d/%d, nnz:%d, n(col): %d, \n",
+			printf("cal train rmse in batch: %d/%d, nnz:%ld, n(col): %ld, \n",
 					batch_id, GPU_COUNT, csc_nnz[batch_id], n);
 
 			cudacall(cudaMalloc((void** ) &cscRowIndex_small,csc_nnz[batch_id] * sizeof(int)));
@@ -2823,7 +2826,7 @@ int main() {
 			cudacall(cudaFree(cscColIndex_small));
 			cudacall(cudaFree(cscVal_small));
 
-			printf("cal test rmse in batch: %d/%d, nnz_test:%d, n(col): %d, \n",
+			printf("cal test rmse in batch: %d/%d, nnz_test:%ld, n(col): %ld, \n",
 					batch_id, GPU_COUNT, csc_nnz_test[batch_id], n);
             cudacall(cudaMalloc((void** ) &cscRowIndex_small,csc_nnz_test[batch_id] * sizeof(int)));
             cudacall(cudaMalloc((void** ) &cscColIndex_small, (n + 1) * sizeof(int)));
